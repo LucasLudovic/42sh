@@ -38,7 +38,7 @@ static
 environment_t *copy_single_variable(environment_t *environment, char *variable)
 {
     environment->key = strtok(variable, "=");
-    environment->value = strtok(variable, "r");
+    environment->value = strtok(NULL, "=");
     return environment;
 }
 
