@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2024
-** My Macros
+** My types
 ** File description:
 ** My types for the minishell1 project
 */

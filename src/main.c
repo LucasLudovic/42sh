@@ -6,7 +6,7 @@
 */
 
 #include "my_macros.h"
-#include "my_shell.h"
+#include "shell/my_shell.h"
 
 int main(int argc, char **argv, char **env)
 {
