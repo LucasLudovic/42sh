@@ -8,6 +8,6 @@
 #ifndef MY_SHELL_H_
     #define MY_SHELL_H_
 
-int my_shell(int number_of_arguments, char **arguments, char **env);
+int my_shell(char **env);
 
 #endif

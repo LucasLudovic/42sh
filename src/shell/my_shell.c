@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <unistd.h>
+#include <dependencies/environment.h>
 #include "my.h"
 #include "my_macros.h"
 
@@ -16,25 +17,26 @@ void print_prompt(void)
     write(1, "> ", 2);
 }
 
-int exec_user_command(char **shell_environment)
-{
-    char *user_command = NULL;
+//int exec_user_command(char **shell_environment)
+//
+//   char *user_command = NULL;
+//
+//   get_user_command();
+//   if (user_command != shell_command)
+//       check_command_output();
+//   return SUCCESS;
+//}
 
-    get_user_command();
-    if (user_command != shell_command)
-        check_command_output();
-    return SUCCESS;
-}
-
-int my_shell(int number_of_arguments, char **arguments, char **environment)
+int my_shell(char **environment)
 {
     int shell_alive = TRUE;
-    char **shell_environment;
+    environment_t *shell_environment = NULL;
 
     shell_environment = get_environment(environment);
     while (shell_alive) {
         print_prompt();
-        shell_alive = exec_user_command(shell_environment);
+        break;
+        //shell_alive = exec_user_command(shell_environment);
     }
     return SUCCESS;
 }

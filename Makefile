@@ -6,7 +6,7 @@
 ##
 
 SRC	=	src/main.c
-SRC	+=	src/my_shell.c
+SRC	+=	src/shell/my_shell.c
 SRC	+=	src/dependencies/get_environment.c
 
 OBJ	=	$(SRC:.c=.o)

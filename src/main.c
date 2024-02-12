@@ -8,7 +8,7 @@
 #include "my_macros.h"
 #include "shell/my_shell.h"
 
-int main(int argc, char **argv, char **env)
+int main(UNUSED const int argc, UNUSED const char *const *argv, char **env)
 {
-    return my_shell(argc, argv, env);
+    return my_shell(env);
 }

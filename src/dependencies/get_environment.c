@@ -7,6 +7,9 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include "my_types.h"
+#include "my.h"
 #include "dependencies/environment.h"
 #include "my_macros.h"
 
@@ -32,12 +35,32 @@ void destroy_environment_list(environment_t *shell_environment)
 }
 
 static
+environment_t *copy_single_variable(environment_t *environment, char *variable)
+{
+    environment->key = strtok(variable, "=");
+    environment->value = strtok(variable, "r");
+    return environment;
+}
+
+static
 environment_t *copy_environment(environment_t *shell_environment, char **env)
 {
-    char *environment_array = NULL;
-
     shell_environment = malloc(sizeof(environment_t));
-    return shell_environment;
+    environment_t *head = shell_environment;
+    char *env_copy = NULL;
+
+    if (shell_environment == NULL)
+        return NULL;
+    for (uint64_t i = 0; env[i] != NULL; i += 1) {
+        env_copy = my_strdup(env[i]);
+        if (env_copy == NULL)
+            return NULL;
+        shell_environment = copy_single_variable(shell_environment, env_copy);
+        if (env[i + 1] != NULL)
+            shell_environment->next = malloc(sizeof(environment_t));
+        shell_environment = shell_environment->next;
+    }
+    return head;
 }
 
 environment_t *get_environment(char **environment)
