@@ -1,0 +1,11 @@
+.idea
+navy
+*.o
+coding-style-reports.log
+*.gcno
+*.a
+*.out
+*.gcda
+vgcore*
+unit_tests
+bonus
