@@ -69,6 +69,6 @@ environment_t *get_environment(char **environment)
 
     if (shell_environment == NULL || environment == NULL)
         return NULL;
-    copy_environment(shell_environment, environment);
+    shell_environment = copy_environment(shell_environment, environment);
     return shell_environment;
 }
