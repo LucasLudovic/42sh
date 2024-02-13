@@ -7,30 +7,30 @@
 
 #include <stddef.h>
 #include "dependencies/environment.h"
+#include "shell/my_shell.h"
 #include "my.h"
 #include "my_macros.h"
 
-int env(environment_t **environment, UNUSED char **arguments,
-    int nb_arguments, UNUSED int *alive)
+int env(shell_t *shell, UNUSED char **arguments, int nb_arguments)
 {
     environment_t *head = NULL;
 
-    if (environment == NULL)
+    if (shell->environment == NULL)
         return FAILURE;
-    head = *environment;
+    head = shell->environment;
     if (nb_arguments != 1) {
         display_error("Wrong number of arguments\n");
         return FAILURE;
     }
-    while (*environment != NULL) {
-        if ((*environment)->key != NULL && (*environment)->value != NULL) {
-            my_putstr((*environment)->key);
+    while (shell->environment != NULL) {
+        if (shell->environment->key != NULL && shell->environment->value != NULL) {
+            my_putstr(shell->environment->key);
             my_putchar('=');
-            my_putstr((*environment)->value);
+            my_putstr(shell->environment->value);
             my_putchar('\n');
         }
-        *environment = (*environment)->next;
+        shell->environment = shell->environment->next;
     }
-    *environment = head;
+    shell->environment = head;
     return SUCCESS;
 }

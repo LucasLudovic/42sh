@@ -16,6 +16,7 @@
 #include "builtin/unsetenv.h"
 #include "builtin/exit.h"
 #include "actions/execute_actions.h"
+#include "shell/my_shell.h"
 #include "my.h"
 #include "my_macros.h"
 
@@ -83,24 +84,22 @@ char **get_user_arguments(char **user_arguments)
 
 int my_shell(char **environment)
 {
-    int shell_alive = TRUE;
+    shell_t my_shell = { .alive = TRUE, .environment= NULL };
     builtin_t builtin_array = { 0 };
     char **user_arguments = NULL;
-    environment_t *shell_environment = NULL;
 
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
-    shell_environment = get_environment(environment);
-    while (shell_alive) {
+    my_shell.environment = get_environment(environment);
+    while (my_shell.alive) {
         print_prompt();
         user_arguments = get_user_arguments(user_arguments);
         if (user_arguments == NULL)
             return FAILURE;
-        if (execute_action(shell_environment, &builtin_array,
-            user_arguments, &shell_alive) == FAILURE)
+        if (execute_action(&my_shell, &builtin_array, user_arguments) == FAILURE)
             return FAILURE;
         destroy_user_arguments(user_arguments);
     }
-    destroy_end(&shell_environment, &builtin_array);
+    destroy_end(&my_shell.environment, &builtin_array);
     return SUCCESS;
 }

@@ -6,11 +6,13 @@
 */
 
 #include "dependencies/environment.h"
+#include "shell/my_shell.h"
 #include "my_macros.h"
 
-int exit_shell(UNUSED environment_t **environment, UNUSED char **arguments,
-    UNUSED int nb_arguments, int *alive)
+int exit_shell(shell_t *shell, UNUSED char **arguments, int nb_arguments)
 {
-    *alive = FALSE;
+    if (nb_arguments != 1)
+        return FAILURE;
+    shell->alive = FALSE;
     return SUCCESS;
 }

@@ -9,7 +9,7 @@
     #define UNSETENV_H_
     #include "dependencies/environment.h"
 
-int my_unsetenv(environment_t **environment, char **arguments,
-    int nb_arguments, int *alive);
+int my_unsetenv(shell_t *my_shell, char **arguments, int nb_arguments);
+
 
 #endif

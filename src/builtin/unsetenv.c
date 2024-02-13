@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stddef.h>
+#include "shell/my_shell.h"
 #include "dependencies/environment.h"
 #include "my_macros.h"
 #include "my.h"
@@ -26,23 +27,22 @@ int destroy_node(environment_t *environment, environment_t *previous_variable,
     return SUCCESS;
 }
 
-int my_unsetenv(environment_t **environment, char **arguments,
-    int nb_arguments, UNUSED int *alive)
+int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
 {
     environment_t *previous_variable = NULL;
-    environment_t *head = *environment;
+    environment_t *head = shell->environment;
 
-    if ((*environment) == NULL || arguments == NULL || nb_arguments != 2)
+    if (shell->environment == NULL || arguments == NULL || nb_arguments != 2)
         return FAILURE;
-    while (*environment != NULL) {
-        if (my_strcmp((*environment)->key, arguments[1]) == 0) {
-            destroy_node(*environment, previous_variable, &head);
-            *environment = head;
+    while (shell->environment != NULL) {
+        if (my_strcmp(shell->environment->key, arguments[1]) == 0) {
+            destroy_node(shell->environment, previous_variable, &head);
+            shell->environment = head;
             return SUCCESS;
         }
-        previous_variable = *environment;
-        *environment = (*environment)->next;
+        previous_variable = shell->environment;
+        shell->environment = shell->environment->next;
     }
-    *environment = head;
+    shell->environment = head;
     return FAILURE;
 }

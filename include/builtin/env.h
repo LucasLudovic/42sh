@@ -8,8 +8,8 @@
 #ifndef ENV_H_
     #define ENV_H_
     #include "dependencies/environment.h"
+    #include "shell/my_shell.h"
 
-int env(environment_t **environment, char **arguments,
-    int nb_arguments, int *alive);
+int env(shell_t *my_shell, char **arguments, int nb_arguments);
 
 #endif

@@ -11,8 +11,7 @@
 #include "my_macros.h"
 #include "my.h"
 
-int execute_action(environment_t *environment, builtin_t *builtin_array,
-    char **arguments, int *alive)
+int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
 {
     int nb_arguments = 0;
 
@@ -22,8 +21,8 @@ int execute_action(environment_t *environment, builtin_t *builtin_array,
         nb_arguments += 1;
     for (int i = 0; i < 5; i += 1) {
         if (my_strcmp(builtin_array->name[i], arguments[0]) == 0)
-            builtin_array->function[i](&environment, arguments,
-                nb_arguments, alive);
+            builtin_array->function[i](shell, arguments,
+                nb_arguments);
     }
     return SUCCESS;
 }
