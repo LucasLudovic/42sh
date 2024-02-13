@@ -18,6 +18,18 @@
 #include "my_macros.h"
 
 static
+void destroy_end(environment_t *shell_environment, builtin_t *builtin_array)
+{
+    destroy_environment_list(shell_environment);
+    if (builtin_array == NULL)
+        return;
+    for (int i = 0; i < 5; i += 1) {
+        if (builtin_array->name[i] != NULL)
+            free(builtin_array->name[i]);
+    }
+}
+
+static
 int initialize_function_pointer_array(builtin_t *builtin_array)
 {
     builtin_array->name[0] = my_strdup("env");
@@ -93,5 +105,7 @@ int my_shell(char **environment)
             user_arguments, &shell_alive) == FAILURE)
             return FAILURE;
     }
+    if (shell_environment != NULL)
+        destroy_end(shell_environment, &builtin_array);
     return SUCCESS;
 }

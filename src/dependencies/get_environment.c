@@ -16,17 +16,13 @@
 static
 void destroy_single_node(environment_t *shell_environment)
 {
-    if (shell_environment->next != NULL) {
+    if (shell_environment->next != NULL)
         destroy_single_node(shell_environment->next);
-    }
     if (shell_environment->key != NULL)
         free(shell_environment->key);
-    if (shell_environment->value != NULL)
-        free(shell_environment->value);
     free(shell_environment);
 }
 
-static
 void destroy_environment_list(environment_t *shell_environment)
 {
     if (shell_environment == NULL)
