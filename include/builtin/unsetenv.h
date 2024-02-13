@@ -6,10 +6,10 @@
 */
 
 #ifndef UNSETENV_H_
-#define UNSETENV_H_
-#include "dependencies/environment.h"
+    #define UNSETENV_H_
+    #include "dependencies/environment.h"
 
 int my_unsetenv(environment_t **environment, char **arguments,
-              int nb_arguments, int *alive);
+    int nb_arguments, int *alive);
 
 #endif

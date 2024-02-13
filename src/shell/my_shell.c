@@ -13,6 +13,7 @@
 #include "builtin/builtin.h"
 #include "builtin/env.h"
 #include "builtin/setenv.h"
+#include "builtin/unsetenv.h"
 #include "builtin/exit.h"
 #include "actions/execute_actions.h"
 #include "my.h"
@@ -48,7 +49,7 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->name[1] = my_strdup("setenv");
     builtin_array->function[1] = &my_setenv;
     builtin_array->name[2] = my_strdup("unsetenv");
-    builtin_array->function[2] = NULL;
+    builtin_array->function[2] = &my_unsetenv;
     builtin_array->name[3] = my_strdup("exit");
     builtin_array->function[3] = &exit_shell;
     builtin_array->name[4] = my_strdup("cd");
