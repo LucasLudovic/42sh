@@ -9,7 +9,7 @@
     #define EXIT_H_
     #include "dependencies/environment.h"
 
-int exit_shell(environment_t *environment, char **arguments,
+int exit_shell(environment_t **environment, char **arguments,
     int nb_arguments, int *alive);
 
 #endif

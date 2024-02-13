@@ -9,7 +9,7 @@
     #define SETENV_H_
     #include "dependencies/environment.h"
 
-int my_setenv(environment_t *environment, char **arguments,
+int my_setenv(environment_t **environment, char **arguments,
     int nb_arguments, int *alive);
 
 #endif

@@ -10,7 +10,7 @@
 
 typedef struct builtin_s {
     char *name[5];
-    int (*function[5])(environment_t *, char **, int, int *);
+    int (*function[5])(environment_t **, char **, int, int *);
 } builtin_t;
 
 #endif
