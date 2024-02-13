@@ -30,6 +30,7 @@ int check_node(environment_t *environment, char **key, char *value)
         free(environment->value);
         free(*key);
         environment->value = value;
+        environment->next = NULL;
         return SUCCESS;
     }
     return FAILURE;
@@ -45,6 +46,7 @@ int add_new_variable(environment_t **environment, char *key, char *value)
         return FAILURE;
     (*environment)->key = key;
     (*environment)->value = value;
+    (*environment)->next = NULL;
     return SUCCESS;
 }
 

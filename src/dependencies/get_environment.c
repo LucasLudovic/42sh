@@ -38,17 +38,18 @@ static
 environment_t *copy_single_variable(environment_t *environment, char *variable)
 {
     environment->key = strtok(variable, "=");
-    environment->value = strtok(NULL, "=");
+    environment->value = strtok(NULL, "\n");
     return environment;
 }
 
 static
 environment_t *copy_environment(environment_t *shell_environment, char **env)
 {
-    shell_environment = malloc(sizeof(environment_t));
-    environment_t *head = shell_environment;
+    environment_t *head = NULL;
     char *env_copy = NULL;
 
+    shell_environment = malloc(sizeof(environment_t));
+    head = shell_environment;
     if (shell_environment == NULL)
         return NULL;
     for (uint64_t i = 0; env[i] != NULL; i += 1) {
@@ -56,10 +57,12 @@ environment_t *copy_environment(environment_t *shell_environment, char **env)
         if (env_copy == NULL)
             return NULL;
         shell_environment = copy_single_variable(shell_environment, env_copy);
-        if (env[i + 1] != NULL)
+        if (env[i + 1] != NULL) {
             shell_environment->next = malloc(sizeof(environment_t));
-        shell_environment = shell_environment->next;
+            shell_environment = shell_environment->next;
+        }
     }
+    shell_environment->next = NULL;
     return head;
 }
 

@@ -20,16 +20,6 @@ void print_prompt(void)
     write(1, "> ", 2);
 }
 
-//int exec_user_command(char **shell_environment)
-//
-//   char *user_command = NULL;
-//
-//   get_user_command();
-//   if (user_command != shell_command)
-//       check_command_output();
-//   return SUCCESS;
-//}
-
 int my_shell(char **environment)
 {
     int shell_alive = TRUE;
@@ -40,7 +30,6 @@ int my_shell(char **environment)
     while (shell_alive) {
         print_prompt();
         break;
-        //shell_alive = exec_user_command(shell_environment);
     }
     env(shell_environment, NULL);
     my_putstr("\n\n\n");
