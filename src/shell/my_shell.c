@@ -84,21 +84,21 @@ char **get_user_arguments(char **user_arguments)
 
 int my_shell(char **environment)
 {
-    shell_t my_shell = { .alive = TRUE, .environment= NULL };
+    shell_t my_shell = { .alive = TRUE, .environment = NULL };
     builtin_t builtin_array = { 0 };
-    char **user_arguments = NULL;
+    char **arguments = NULL;
 
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
     my_shell.environment = get_environment(environment);
     while (my_shell.alive) {
         print_prompt();
-        user_arguments = get_user_arguments(user_arguments);
-        if (user_arguments == NULL)
+        arguments = get_user_arguments(arguments);
+        if (arguments == NULL)
             return FAILURE;
-        if (execute_action(&my_shell, &builtin_array, user_arguments) == FAILURE)
+        if (execute_action(&my_shell, &builtin_array, arguments) == FAILURE)
             return FAILURE;
-        destroy_user_arguments(user_arguments);
+        destroy_user_arguments(arguments);
     }
     destroy_end(&my_shell.environment, &builtin_array);
     return SUCCESS;

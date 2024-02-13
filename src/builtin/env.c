@@ -11,6 +11,18 @@
 #include "my.h"
 #include "my_macros.h"
 
+static
+void display_single_node(shell_t *shell)
+{
+    if (shell->environment->key != NULL &&
+        shell->environment->value != NULL) {
+        my_putstr(shell->environment->key);
+        my_putchar('=');
+        my_putstr(shell->environment->value);
+        my_putchar('\n');
+    }
+}
+
 int env(shell_t *shell, UNUSED char **arguments, int nb_arguments)
 {
     environment_t *head = NULL;
@@ -23,12 +35,7 @@ int env(shell_t *shell, UNUSED char **arguments, int nb_arguments)
         return FAILURE;
     }
     while (shell->environment != NULL) {
-        if (shell->environment->key != NULL && shell->environment->value != NULL) {
-            my_putstr(shell->environment->key);
-            my_putchar('=');
-            my_putstr(shell->environment->value);
-            my_putchar('\n');
-        }
+        display_single_node(shell);
         shell->environment = shell->environment->next;
     }
     shell->environment = head;

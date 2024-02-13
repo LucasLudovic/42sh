@@ -8,7 +8,8 @@
 #include "shell/my_shell.h"
 #include "my_macros.h"
 
-int change_directory(UNUSED shell_t *shell, UNUSED char **arguments, UNUSED int nb_arguments)
+int change_directory(UNUSED shell_t *shell, UNUSED char **arguments,
+    UNUSED int nb_arguments)
 {
     return SUCCESS;
 }
