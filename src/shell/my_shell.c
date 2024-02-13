@@ -14,6 +14,7 @@
 #include "builtin/env.h"
 #include "builtin/setenv.h"
 #include "builtin/exit.h"
+#include "actions/execute_actions.h"
 #include "my.h"
 #include "my_macros.h"
 
@@ -77,23 +78,6 @@ char **get_user_arguments(char **user_arguments)
     user_arguments = my_str_to_word_array(user_input);
     free(user_input);
     return user_arguments;
-}
-
-int execute_action(environment_t *environment, builtin_t *builtin_array,
-    char **arguments, int *alive)
-{
-    int nb_arguments = 0;
-
-    if (arguments == NULL || arguments[0] == NULL)
-        return FAILURE;
-    while (arguments[nb_arguments] != NULL)
-        nb_arguments += 1;
-    for (int i = 0; i < 5; i += 1) {
-        if (my_strcmp(builtin_array->name[i], arguments[0]) == 0)
-            builtin_array->function[i](environment, arguments,
-                nb_arguments, alive);
-    }
-    return SUCCESS;
 }
 
 int my_shell(char **environment)
