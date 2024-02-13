@@ -14,16 +14,16 @@
 #include "my_macros.h"
 
 static
-void destroy_single_node(environment_t *shell_environment)
+void destroy_single_node(environment_t **shell_environment)
 {
-    if (shell_environment->next != NULL)
-        destroy_single_node(shell_environment->next);
-    if (shell_environment->key != NULL)
-        free(shell_environment->key);
-    free(shell_environment);
+    if ((*shell_environment)->next != NULL)
+        destroy_single_node(&(*shell_environment)->next);
+    if ((*shell_environment)->key != NULL)
+        free((*shell_environment)->key);
+    free(*shell_environment);
 }
 
-void destroy_environment_list(environment_t *shell_environment)
+void destroy_environment_list(environment_t **shell_environment)
 {
     if (shell_environment == NULL)
         return;
@@ -64,9 +64,9 @@ environment_t *copy_environment(environment_t *shell_environment, char **env)
 
 environment_t *get_environment(char **environment)
 {
-    environment_t *shell_environment = malloc(sizeof(environment_t));
+    environment_t *shell_environment = NULL;
 
-    if (shell_environment == NULL || environment == NULL)
+    if (environment == NULL)
         return NULL;
     shell_environment = copy_environment(shell_environment, environment);
     return shell_environment;

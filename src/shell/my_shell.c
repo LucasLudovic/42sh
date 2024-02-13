@@ -18,7 +18,7 @@
 #include "my_macros.h"
 
 static
-void destroy_end(environment_t *shell_environment, builtin_t *builtin_array)
+void destroy_end(environment_t **shell_environment, builtin_t *builtin_array)
 {
     destroy_environment_list(shell_environment);
     if (builtin_array == NULL)
@@ -27,6 +27,16 @@ void destroy_end(environment_t *shell_environment, builtin_t *builtin_array)
         if (builtin_array->name[i] != NULL)
             free(builtin_array->name[i]);
     }
+}
+
+static
+void destroy_user_arguments(char **user_arguments)
+{
+    if (user_arguments == NULL)
+        return;
+    for (size_t i = 0; user_arguments[i] != NULL; i += 1)
+        free(user_arguments[i]);
+    free(user_arguments);
 }
 
 static
@@ -104,8 +114,8 @@ int my_shell(char **environment)
         if (execute_action(shell_environment, &builtin_array,
             user_arguments, &shell_alive) == FAILURE)
             return FAILURE;
+        destroy_user_arguments(user_arguments);
     }
-    if (shell_environment != NULL)
-        destroy_end(shell_environment, &builtin_array);
+    destroy_end(&shell_environment, &builtin_array);
     return SUCCESS;
 }

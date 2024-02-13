@@ -84,7 +84,7 @@ int my_setenv(environment_t *environment, char **arguments,
         return -1;
     if (check_sign_equal(arguments[1]) == FAILURE)
         return -1;
-    if (add_variable(environment, arguments[1]) == FAILURE)
+    if (add_variable(environment, my_strdup(arguments[1])) == FAILURE)
         return -1;
     return SUCCESS;
 }
