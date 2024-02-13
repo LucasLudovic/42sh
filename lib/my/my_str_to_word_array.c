@@ -11,13 +11,11 @@
 #include "my.h"
 
 static
-int my_isalphanum(char const str)
+int check_not_delim(char const str, char const delim)
 {
-    int condition1 = str < 48 || str > 57;
-    int condition2 = str < 65 || str > 90;
-    int condition3 = str < 97 || str > 122;
+    int condition1 = str < delim || str > delim;
 
-    if (condition1 && condition2 && condition3)
+    if (condition1)
         return 0;
     return 1;
 }
@@ -40,24 +38,19 @@ int get_word_length(char const *str)
 }
 
 static
-int get_nb_of_words(char const *str)
+int get_nb_of_words(char const *str, char const delim)
 {
     int words = 0;
     int condition1 = 0;
     int condition2 = 0;
-    int condition3 = 0;
-    int condition4 = 0;
 
     for (int i = 1; str[i] != '\0'; i += 1) {
-        condition1 = my_isalphanum(str[i]);
-        condition2 = my_isalphanum(str[i - 1]);
-        condition3 = str[i] == '.';
-        condition4 = str[i - 1] == '.';
-        if ((!condition1 && condition2) || (!condition3 && condition4))
+        condition1 = check_not_delim(str[i], delim);
+        condition2 = check_not_delim(str[i - 1], delim);
+        if ((condition1 && !condition2))
             words += 1;
     }
-    if (my_isalphanum(str[my_strlen(str) - 1]) ||
-        str[my_strlen(str) - 1] == '.')
+    if (check_not_delim(str[my_strlen(str) - 1], delim) == 0)
         words += 1;
     return words;
 }
@@ -68,8 +61,6 @@ int go_to_word(char **arr)
     int nb_spaces = 0;
 
     while (**arr == ' ') {
-        if (nb_spaces > 0)
-            return 84;
         nb_spaces += 1;
         *arr += 1;
     }
@@ -97,7 +88,7 @@ int divide_into_array(char **ptr_to_return, char *arr, int number_of_words)
 
 char **my_str_to_word_array(char *tab)
 {
-    int number_of_words = get_nb_of_words(tab);
+    int number_of_words = get_nb_of_words(tab, ' ');
     char *arr = tab;
     char **ptr_to_return = malloc(sizeof(char *) * (number_of_words + 1));
 

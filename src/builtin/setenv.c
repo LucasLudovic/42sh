@@ -27,10 +27,12 @@ static
 int check_node(environment_t *environment, char **key, char *value)
 {
     if (my_strcmp(environment->key, *key) == 0) {
-        free(environment->value);
-        free(*key);
+        if (environment->key == NULL)
+            environment->next = NULL;
+        if (environment->key != NULL)
+            free(environment->key);
+        environment->key = *key;
         environment->value = value;
-        environment->next = NULL;
         return SUCCESS;
     }
     return FAILURE;
@@ -70,11 +72,13 @@ int add_variable(environment_t *environment, char *argument)
             return SUCCESS;
         environment = environment->next;
     }
-    check_node(environment, &key, value);
+    if (check_node(environment, &key, value) == SUCCESS)
+        return SUCCESS;
     return add_new_variable(&environment->next, key, value);
 }
 
-int my_setenv(environment_t *environment, char **arguments, int nb_arguments)
+int my_setenv(environment_t *environment, char **arguments,
+    int nb_arguments, UNUSED int *alive)
 {
     if (environment == NULL || arguments == NULL || nb_arguments != 2)
         return -1;

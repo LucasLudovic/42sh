@@ -9,6 +9,7 @@
     #define ENV_H_
     #include "dependencies/environment.h"
 
-int env(environment_t *environment, const char *arguments);
+int env(environment_t *environment, char **arguments,
+    int nb_arguments, int *alive);
 
 #endif

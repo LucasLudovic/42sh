@@ -1,5 +1,5 @@
 .idea
-navy
+mysh
 *.o
 coding-style-reports.log
 *.gcno

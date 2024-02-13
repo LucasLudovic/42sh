@@ -10,10 +10,13 @@
 #include "my.h"
 #include "my_macros.h"
 
-int env(environment_t *environment, const char *arguments)
+int env(environment_t *environment, UNUSED char **arguments,
+    int nb_arguments, UNUSED int *alive)
 {
-    if (arguments != NULL)
+    if (nb_arguments != 1) {
+        display_error("Wrong number of arguments\n");
         return FAILURE;
+    }
     while (environment != NULL) {
         if (environment->key != NULL && environment->value != NULL) {
             my_putstr(environment->key);
