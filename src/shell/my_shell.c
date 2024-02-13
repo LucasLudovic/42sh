@@ -15,6 +15,7 @@
 #include "builtin/setenv.h"
 #include "builtin/unsetenv.h"
 #include "builtin/exit.h"
+#include "builtin/cd.h"
 #include "actions/execute_actions.h"
 #include "shell/my_shell.h"
 #include "my.h"
@@ -54,7 +55,7 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->name[3] = my_strdup("exit");
     builtin_array->function[3] = &exit_shell;
     builtin_array->name[4] = my_strdup("cd");
-    builtin_array->function[4] = NULL;
+    builtin_array->function[4] = &change_directory;
     if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
         builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
         builtin_array->name[4] == NULL)

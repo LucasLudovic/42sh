@@ -26,7 +26,7 @@ int change_directory(shell_t *shell, char **arguments, int nb_arguments)
 {
     char *home_directory = NULL;
 
-    if (shell == NULL || shell->environment == NULL)
+    if (shell == NULL || shell->environment == NULL || nb_arguments > 2)
         return FAILURE;
     home_directory = get_home(shell->environment);
     if (home_directory == NULL)
@@ -36,5 +36,7 @@ int change_directory(shell_t *shell, char **arguments, int nb_arguments)
             return display_error("Unable to change the directory");
         return SUCCESS;
     }
+    if (chdir(arguments[1]) != 0)
+        return display_error("Unable to change the directory");
     return SUCCESS;
 }
