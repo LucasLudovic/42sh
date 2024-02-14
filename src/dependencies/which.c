@@ -70,8 +70,10 @@ char *retrieve_function_path(char *path, const char *file_name)
     solo_path = strtok(path, ":");
     while (solo_path != NULL) {
         directory = opendir(solo_path);
-        if (directory == NULL)
+        if (directory == NULL) {
             display_error("Wrong directory in PATH\n");
+            return NULL;
+        }
         absolute_file_path = get_file_path(directory, solo_path, file_name);
         closedir(directory);
         if (absolute_file_path != NULL)
