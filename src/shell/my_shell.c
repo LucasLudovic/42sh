@@ -87,7 +87,7 @@ char **get_user_arguments(char **user_arguments)
 
 int my_shell(char **environment)
 {
-    shell_t my_shell = { .alive = TRUE, .environment = NULL };
+    shell_t my_shell = { .alive = TRUE, .environment = NULL, .exit_status = 0 };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
 
@@ -105,5 +105,5 @@ int my_shell(char **environment)
         destroy_user_arguments(arguments);
     }
     destroy_end(&my_shell.environment, &builtin_array);
-    return SUCCESS;
+    return my_shell.exit_status;
 }

@@ -18,7 +18,7 @@
 static
 int execute_binary(shell_t *shell, char *path, char **arguments)
 {
-    int current_pid = 0;
+    pid_t current_pid = 0;
     char **environment_array = NULL;
     int wait_status = 0;
 
@@ -29,11 +29,13 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     if (current_pid == 0) {
         execve(path, arguments, environment_array);
         shell->alive = FALSE;
+        shell->exit_status = FAILURE;
         return FAILURE;
     }
     waitpid(-1, &wait_status, 0);
     if (environment_array != NULL)
         destroy_environment_array(environment_array);
+    shell->exit_status = wait_status;
     return SUCCESS;
 }
 

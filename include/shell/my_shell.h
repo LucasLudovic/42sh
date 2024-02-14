@@ -12,6 +12,7 @@
 typedef struct shell_s {
     int alive;
     environment_t *environment;
+    int exit_status;
 } shell_t;
 
 int my_shell(char **env);
