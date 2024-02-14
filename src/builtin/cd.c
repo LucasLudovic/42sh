@@ -33,10 +33,10 @@ int change_directory(shell_t *shell, char **arguments, int nb_arguments)
         return FAILURE;
     if (nb_arguments == 1) {
         if (chdir(home_directory) != 0)
-            return display_error("Unable to change the directory");
+            return display_error("Unable to change the directory\n");
         return SUCCESS;
     }
     if (chdir(arguments[1]) != 0)
-        return display_error("Unable to change the directory");
+        return display_error("Unable to change the directory\n");
     return SUCCESS;
 }

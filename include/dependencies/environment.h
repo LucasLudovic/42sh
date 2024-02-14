@@ -16,5 +16,7 @@ typedef struct environment_s {
 
 environment_t *get_environment(char **environment);
 void destroy_environment_list(environment_t **shell_environment);
+char **convert_environment_to_array(environment_t *environment);
+void destroy_environment_array(char **array);
 
 #endif

@@ -76,7 +76,8 @@ char **get_user_arguments(char **user_arguments)
     char *user_input = NULL;
     size_t size = 0;
 
-    getline(&user_input, &size, stdin);
+    if (getline(&user_input, &size, stdin) <= 0)
+        return NULL;
     if (user_input == NULL)
         return NULL;
     user_arguments = my_str_to_word_array(user_input);
@@ -96,10 +97,11 @@ int my_shell(char **environment)
     while (my_shell.alive) {
         print_prompt();
         arguments = get_user_arguments(arguments);
-        if (arguments == NULL)
+        if (arguments == NULL) {
+            destroy_end(&my_shell.environment, &builtin_array);
             return FAILURE;
-        if (execute_action(&my_shell, &builtin_array, arguments) == FAILURE)
-            return FAILURE;
+        }
+        execute_action(&my_shell, &builtin_array, arguments);
         destroy_user_arguments(arguments);
     }
     destroy_end(&my_shell.environment, &builtin_array);
