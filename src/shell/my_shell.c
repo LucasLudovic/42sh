@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <dependencies/environment.h>
+#include "dependencies/which.h"
+#include "dependencies/environment.h"
 #include "builtin/builtin.h"
 #include "builtin/env.h"
 #include "builtin/setenv.h"

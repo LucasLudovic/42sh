@@ -29,7 +29,7 @@ int check_file_in_dir(DIR *directory, const char *file_name)
     struct dirent *file = readdir(directory);
 
     while (file != NULL) {
-        if (my_strcmp(file_name, file->d_name))
+        if (my_strcmp(file_name, file->d_name) == 0)
             return TRUE;
         file = readdir(directory);
     }
@@ -48,8 +48,12 @@ char *get_file_path(DIR *directory, const char *solo_path,
     if (!check_file_in_dir(directory, file_name))
         return NULL;
     len_absolute_path = my_strlen(solo_path) + my_strlen(file_name);
+    if (solo_path[my_strlen(solo_path) - 1] != '/')
+        len_absolute_path += 1;
     absolute_path = malloc(sizeof(char) * (len_absolute_path + 1));
     my_strcpy(absolute_path, solo_path);
+    if (solo_path[my_strlen(solo_path) - 1] != '/')
+        my_strcat(absolute_path, "/");
     my_strcat(absolute_path, file_name);
     return absolute_path;
 }
@@ -71,13 +75,14 @@ char *retrieve_function_path(char *path, const char *file_name)
         absolute_file_path = get_file_path(directory, solo_path, file_name);
         if (absolute_file_path != NULL)
             return absolute_file_path;
-        solo_path = strtok(path, ":");
+        solo_path = strtok(NULL, ":");
     }
+    closedir(directory);
     return NULL;
 }
 
 char *get_function_absolute_path(environment_t *environment,
-    const char **arguments)
+    char **arguments)
 {
     char *path = NULL;
     char *function_absolute_path = NULL;
