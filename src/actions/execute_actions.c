@@ -25,16 +25,17 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     if (path == NULL || arguments == NULL || arguments[0] == NULL)
         return FAILURE;
     environment_array = convert_environment_to_array(shell->environment);
+    if (access(path, X_OK) != 0 || environment_array == NULL) {
+        destroy_environment_array(environment_array);
+        return display_error("Can't access the file\n");
+    }
     current_pid = fork();
     if (current_pid == 0) {
         execve(path, arguments, environment_array);
-        shell->alive = FALSE;
-        shell->exit_status = FAILURE;
-        return FAILURE;
+        exit(FAILURE);
     }
     waitpid(-1, &wait_status, 0);
-    if (environment_array != NULL)
-        destroy_environment_array(environment_array);
+    destroy_environment_array(environment_array);
     shell->exit_status = wait_status;
     return SUCCESS;
 }
