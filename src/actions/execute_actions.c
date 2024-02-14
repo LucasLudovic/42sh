@@ -80,7 +80,8 @@ int execute_from_path(shell_t *shell, char **arguments)
 
     if (shell == NULL || arguments == NULL)
         return FAILURE;
-    binary_absolute_path = get_function_absolute_path(shell->environment, arguments);
+    binary_absolute_path = get_function_absolute_path(shell->environment,
+        arguments);
     if (binary_absolute_path == NULL)
         return FAILURE;
     status = execute_binary(shell, binary_absolute_path, arguments);
