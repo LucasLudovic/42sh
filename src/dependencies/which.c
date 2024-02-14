@@ -73,11 +73,11 @@ char *retrieve_function_path(char *path, const char *file_name)
         if (directory == NULL)
             display_error("Wrong directory in PATH\n");
         absolute_file_path = get_file_path(directory, solo_path, file_name);
+        closedir(directory);
         if (absolute_file_path != NULL)
             return absolute_file_path;
         solo_path = strtok(NULL, ":");
     }
-    closedir(directory);
     return NULL;
 }
 
