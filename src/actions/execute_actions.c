@@ -16,6 +16,26 @@
 #include "my.h"
 
 static
+char **add_to_array(char **array, char *str)
+{
+    if (array == NULL || str == NULL)
+        return NULL;
+    return NULL;
+}
+
+static
+void execute_special_binary(char *path, char **arguments, char ***environment)
+{
+    if (path == NULL || arguments == NULL || arguments[0] == NULL)
+        return;
+    if (my_strcmp(arguments[0], "ls") == 0) {
+        if (add_to_array(*environment, "--color=tty") == NULL)
+            return;
+        execve(path, arguments, *environment);
+    }
+}
+
+static
 int execute_binary(shell_t *shell, char *path, char **arguments)
 {
     pid_t current_pid = 0;
@@ -31,6 +51,7 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     }
     current_pid = fork();
     if (current_pid == 0) {
+        execute_special_binary(path, arguments, &environment_array);
         execve(path, arguments, environment_array);
         exit(FAILURE);
     }
