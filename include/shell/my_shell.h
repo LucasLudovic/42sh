@@ -14,6 +14,7 @@ typedef struct shell_s {
     int alive;
     environment_t *environment;
     int exit_status;
+    char *previous_path;
     alias_t *alias;
 } shell_t;
 

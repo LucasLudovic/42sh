@@ -23,8 +23,11 @@
 #include "my_macros.h"
 
 static
-void destroy_end(environment_t **shell_environment, builtin_t *builtin_array)
+void destroy_end(shell_t *shell, environment_t **shell_environment,
+    builtin_t *builtin_array)
 {
+    if (shell != NULL && shell->previous_path != NULL)
+        free(shell->previous_path);
     destroy_environment_list(shell_environment);
     if (builtin_array == NULL)
         return;
@@ -91,7 +94,7 @@ char **get_user_arguments(char **user_arguments)
 int my_shell(char **environment)
 {
     shell_t my_shell = { .alive = TRUE, .environment = NULL,
-        .exit_status = 0 };
+        .exit_status = 0, .previous_path = NULL, .alias = NULL };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
 
@@ -102,12 +105,12 @@ int my_shell(char **environment)
         print_prompt(&my_shell);
         arguments = get_user_arguments(arguments);
         if (arguments == NULL) {
-            destroy_end(&my_shell.environment, &builtin_array);
+            destroy_end(&my_shell, &my_shell.environment, &builtin_array);
             return FAILURE;
         }
         execute_action(&my_shell, &builtin_array, arguments);
         destroy_user_arguments(arguments);
     }
-    destroy_end(&my_shell.environment, &builtin_array);
+    destroy_end(&my_shell, &my_shell.environment, &builtin_array);
     return my_shell.exit_status;
 }

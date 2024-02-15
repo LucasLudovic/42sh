@@ -91,7 +91,7 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
         arguments);
     if (binary_absolute_path == NULL) {
         shell->exit_status = FAILURE;
-        return FAILURE;
+        return display_error("Unable to find the binary\n");
     }
     status = execute_binary(shell, binary_absolute_path, arguments);
     if (binary_absolute_path != NULL)
