@@ -68,9 +68,9 @@ static
 void print_prompt(shell_t *shell)
 {
     if (shell->exit_status == 0)
-        display_string_colored("> ", "green");
+        display_string_colored("~> ", "green");
     else
-        display_string_colored("x ", "red");
+        display_string_colored("x> ", "red");
 }
 
 static
