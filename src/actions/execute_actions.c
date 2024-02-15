@@ -89,8 +89,10 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
         return FAILURE;
     binary_absolute_path = get_function_absolute_path(shell->environment,
         arguments);
-    if (binary_absolute_path == NULL)
+    if (binary_absolute_path == NULL) {
+        shell->exit_status = FAILURE;
         return FAILURE;
+    }
     status = execute_binary(shell, binary_absolute_path, arguments);
     if (binary_absolute_path != NULL)
         free(binary_absolute_path);
@@ -102,7 +104,7 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     int nb_arguments = 0;
     char *binary_name = NULL;
 
-    if (arguments == NULL || arguments[0] == NULL)
+    if (shell == NULL || arguments == NULL || arguments[0] == NULL)
         return FAILURE;
     binary_name = arguments[0];
     while (arguments[nb_arguments] != NULL)
