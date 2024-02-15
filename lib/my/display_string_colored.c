@@ -70,8 +70,12 @@ char *get_color_prompt(char *ansi_code)
 {
     char *color_prompt = malloc(sizeof(char) * 6);
 
-    if (color_prompt == NULL || my_strlen(ansi_code) < 1)
+    if (color_prompt == NULL)
         return NULL;
+    if (ansi_code == NULL || my_strlen(ansi_code) < 1) {
+        free(color_prompt);
+        return NULL;
+    }
     color_prompt[0] = '\033';
     color_prompt[1] = '[';
     color_prompt[2] = '\0';
