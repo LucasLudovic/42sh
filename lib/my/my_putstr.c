@@ -5,13 +5,16 @@
 ** Display a string
 */
 
+#include <stddef.h>
 #include "my.h"
 
 int my_putstr(char const *str)
 {
+    if (str == NULL)
+        return FAILURE;
     while (*str != '\0') {
         my_putchar(*str);
         str += 1;
     }
-    return 0;
+    return SUCCESS;
 }

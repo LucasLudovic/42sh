@@ -40,7 +40,8 @@ SRC	=	my_find_prime_sup.c \
 		my_nbr_to_str.c	\
 		display_error.c \
 		my_str_to_word_array.c \
-		my_nbr_to_str.c
+		my_nbr_to_str.c	\
+		display_string_colored.c
 
 OBJ	=	$(SRC:.c=.o)
 

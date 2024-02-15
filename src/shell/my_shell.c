@@ -67,7 +67,7 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
 static
 void print_prompt(void)
 {
-    write(1, "> ", 2);
+    display_string_colored("> ", "green");
 }
 
 static

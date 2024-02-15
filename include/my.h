@@ -7,7 +7,10 @@
 
 #ifndef MY_H
     #define MY_H
+    #define SUCCESS 0
+    #define FAILURE 84
 
+int display_string_colored(char const *str, char *color);
 char *my_nbr_to_str(int number);
 int my_putchar(char c);
 int my_isneg(int nb);
