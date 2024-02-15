@@ -65,9 +65,12 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
 }
 
 static
-void print_prompt(void)
+void print_prompt(shell_t *shell)
 {
-    display_string_colored("> ", "green");
+    if (shell->exit_status == 0)
+        display_string_colored("> ", "green");
+    else
+        display_string_colored("x ", "red");
 }
 
 static
@@ -96,7 +99,7 @@ int my_shell(char **environment)
         return FAILURE;
     my_shell.environment = get_environment(environment);
     while (my_shell.alive) {
-        print_prompt();
+        print_prompt(&my_shell);
         arguments = get_user_arguments(arguments);
         if (arguments == NULL) {
             destroy_end(&my_shell.environment, &builtin_array);
