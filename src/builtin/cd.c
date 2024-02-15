@@ -29,9 +29,10 @@ int change_directory(shell_t *shell, char **arguments, int nb_arguments)
     if (shell == NULL || shell->environment == NULL || nb_arguments > 2)
         return FAILURE;
     home_directory = get_home(shell->environment);
-    if (home_directory == NULL)
+    if (home_directory == NULL && (nb_arguments == 1 ||
+            (nb_arguments == 2 && my_strcmp(arguments[1], "~") == 0)))
         return FAILURE;
-    if (nb_arguments == 1) {
+    if (nb_arguments == 1 || my_strcmp(arguments[1], "~") == 0) {
         if (chdir(home_directory) != 0)
             return display_error("Unable to change the directory\n");
         return SUCCESS;

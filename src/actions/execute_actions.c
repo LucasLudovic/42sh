@@ -13,6 +13,7 @@
 #include "dependencies/which.h"
 #include "dependencies/environment.h"
 #include "builtin/builtin.h"
+#include "builtin/alias.h"
 #include "my_macros.h"
 #include "my.h"
 
@@ -64,20 +65,22 @@ int check_current_directory(char *file_name)
 }
 
 static
-int execute_from_current_directory(shell_t *shell, char **arguments)
+int execute_from_current_directory(shell_t *shell, char *binary_name,
+    char **arguments)
 {
-    if (arguments == NULL || arguments[0] == NULL ||
-        my_strncmp(arguments[0], "./", 2) != 0)
+    if (arguments == NULL || binary_name == NULL ||
+        my_strncmp(binary_name, "./", 2) != 0)
         return FAILURE;
-    if (my_strlen(arguments[0]) < 3)
+    if (my_strlen(binary_name) < 3)
         return FAILURE;
-    if (check_current_directory(arguments[0] + 2) == FALSE)
+    if (check_current_directory(binary_name + 2) == FALSE)
         return FAILURE;
-    return execute_binary(shell, arguments[0] + 2, arguments);
+    return execute_binary(shell, binary_name + 2, arguments);
 }
 
 static
-int execute_from_path(shell_t *shell, char **arguments)
+int execute_from_path(shell_t *shell, UNUSED char *binary_name,
+    char **arguments)
 {
     char *binary_absolute_path = NULL;
     int status = FAILURE;
@@ -97,17 +100,19 @@ int execute_from_path(shell_t *shell, char **arguments)
 int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
 {
     int nb_arguments = 0;
+    char *binary_name = NULL;
 
     if (arguments == NULL || arguments[0] == NULL)
         return FAILURE;
+    binary_name = arguments[0];
     while (arguments[nb_arguments] != NULL)
         nb_arguments += 1;
     for (int i = 0; i < 5; i += 1) {
-        if (my_strcmp(builtin_array->name[i], arguments[0]) == 0)
+        if (my_strcmp(builtin_array->name[i], binary_name) == 0)
             return builtin_array->function[i](shell, arguments,
                 nb_arguments);
     }
-    if (execute_from_current_directory(shell, arguments) == SUCCESS)
+    if (execute_from_current_directory(shell, binary_name, arguments) == 0)
         return SUCCESS;
-    return execute_from_path(shell, arguments);
+    return execute_from_path(shell, binary_name, arguments);
 }

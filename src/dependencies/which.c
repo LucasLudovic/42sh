@@ -16,6 +16,10 @@ static
 char *get_path(environment_t *environment)
 {
     while (environment != NULL) {
+        if (environment->key == NULL || environment->value == NULL) {
+            environment = environment->next;
+            continue;
+        }
         if (my_strcmp(environment->key, "PATH") == 0)
             return my_strdup(environment->value);
         environment = environment->next;
@@ -89,6 +93,8 @@ char *get_function_absolute_path(environment_t *environment,
     char *path = NULL;
     char *function_absolute_path = NULL;
 
+    if (environment == NULL)
+        return NULL;
     path = get_path(environment);
     if (path == NULL)
         return NULL;

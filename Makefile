@@ -10,6 +10,7 @@ SRC	+=	src/shell/my_shell.c
 SRC	+=	src/dependencies/which.c
 SRC	+=	src/dependencies/get_environment.c
 SRC	+=	src/dependencies/environment_array.c
+SRC	+=	src/builtin/alias.c
 SRC	+=	src/builtin/env.c
 SRC	+=	src/builtin/setenv.c
 SRC	+=	src/builtin/unsetenv.c
