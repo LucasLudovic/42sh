@@ -27,13 +27,15 @@ CFLAGS	=	-W -Wall -Wextra -Wpedantic -g
 
 CPPFLAGS	=	-I include
 
-LDFLAGS	=	-L lib/my -lmy
+LDFLAGS	=	-L lib -lmy -lmy_alloc
 
 all:	$(NAME)
 
 $(NAME):	$(OBJ)
 	@make -C lib/my
 	@make clean -C lib/my
+	@make -C lib/my_alloc
+	@make clean -C lib/my_alloc
 	@$(CC) -o $(NAME) $(OBJ) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
 
 clean:
@@ -41,6 +43,7 @@ clean:
 
 fclean:	clean
 	@make fclean -C lib/my
+	@make fclean -C lib/my_alloc
 	@make fclean -C tests/
 	@rm -f $(NAME)
 
