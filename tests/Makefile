@@ -5,7 +5,16 @@
 ## make
 ##
 
-SRC	=	../src/my_shell.c
+SRC	=	../src/attack.c
+SRC	+=	../src/connection.c
+SRC	+=	../src/defense.c
+SRC	+=	../src/gameboard.c
+SRC	+=	../src/gameloop.c
+SRC	+=	../src/my_navy.c
+SRC	+=	../src/transform_map.c
+SRC	+=	../src/retrieve_info.c
+SRC	+=	test_transform_map.c
+SRC	+=	test_info.c
 
 OBJ	=	$(SRC:.c=.o)
 
