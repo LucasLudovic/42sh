@@ -26,6 +26,8 @@ int get_word_length(char const *str)
     int i = 0;
     int j = 0;
 
+    if (str == NULL)
+        return -1;
     while (1) {
         while (str[j] != ' ' && str[j] != '\n' && str[j] != '\0') {
             i += 1;
@@ -60,12 +62,8 @@ int get_nb_of_words(char const *str, char const delim)
 static
 int go_to_word(char **arr)
 {
-    int nb_spaces = 0;
-
-    while (**arr == ' ') {
-        nb_spaces += 1;
+    if (**arr == ' ')
         *arr += 1;
-    }
     return 0;
 }
 
