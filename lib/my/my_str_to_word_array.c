@@ -44,6 +44,8 @@ int get_nb_of_words(char const *str, char const delim)
     int condition1 = 0;
     int condition2 = 0;
 
+    if (str == NULL)
+        return -1;
     for (int i = 1; str[i] != '\0'; i += 1) {
         condition1 = check_not_delim(str[i], delim);
         condition2 = check_not_delim(str[i - 1], delim);
@@ -86,20 +88,51 @@ int divide_into_array(char **ptr_to_return, char *arr, int number_of_words)
     return 0;
 }
 
+static
+char *clean_string(char *str)
+{
+    char *new_string = NULL;
+    int size_string = 0;
+    int clean_index = 0;
+
+    if (str == NULL)
+        return NULL;
+    size_string = my_strlen(str);
+    if (str <= 0)
+        return NULL;
+    new_string = malloc(sizeof(char) * size_string + 1);
+    if (new_string == NULL)
+        return NULL;
+    for (int i = 0; str[i] != '\0'; i += 1)
+        if (str[i] != ' ' ||
+            (str[i + 1] != ' ' && str[i + 1] != '\0' && str[i + 1] != '\n')) {
+            new_string[clean_index] = str[i];
+            clean_index += 1;
+        }
+    new_string[clean_index] = '\0';
+    return new_string;
+}
+
 char **my_str_to_word_array(char *tab)
 {
-    int number_of_words = get_nb_of_words(tab, ' ');
-    char *arr = tab;
-    char **ptr_to_return = malloc(sizeof(char *) * (number_of_words + 1));
+    int number_of_words = 0;
+    char *arr = clean_string(tab);
+    char **ptr_to_return = NULL;
 
+    number_of_words = get_nb_of_words(arr, ' ');
+    if (number_of_words < 1)
+        return NULL;
+    ptr_to_return = malloc(sizeof(char *) * (number_of_words + 1));
     if (ptr_to_return == NULL)
         return NULL;
-    if (arr == NULL) {
+    if (arr == NULL || number_of_words < 1) {
         free(ptr_to_return);
         return NULL;
     }
     if (divide_into_array(ptr_to_return, arr, number_of_words) == 84)
         return NULL;
     ptr_to_return[number_of_words] = NULL;
+    if (arr != NULL)
+        free(arr);
     return ptr_to_return;
 }
