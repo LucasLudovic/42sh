@@ -54,13 +54,13 @@ int add_new_variable(environment_t **environment, char *key, char *value)
 }
 
 static
-int add_variable(environment_t *environment, char *argument)
+int add_variable(environment_t *environment, char **arguments)
 {
     char *key = NULL;
     char *value = NULL;
 
-    key = strtok(argument, "=");
-    value = strtok(NULL, "\n");
+    key = my_strdup(arguments[1]);
+    value = my_strdup(arguments[2]);
     if (key == NULL || value == NULL || my_str_isupper(key) != TRUE) {
         if (key != NULL)
             free(key);
@@ -81,11 +81,9 @@ int add_variable(environment_t *environment, char *argument)
 int my_setenv(shell_t *shell, char **arguments, int nb_arguments)
 
 {
-    if (shell->environment == NULL || arguments == NULL || nb_arguments != 2)
+    if (shell->environment == NULL || arguments == NULL || nb_arguments != 3)
         return -1;
-    if (check_sign_equal(arguments[1]) == FAILURE)
-        return -1;
-    if (add_variable(shell->environment, my_strdup(arguments[1])) == FAILURE)
+    if (add_variable(shell->environment, arguments) == FAILURE)
         return -1;
     return SUCCESS;
 }
