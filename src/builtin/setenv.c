@@ -61,7 +61,7 @@ int add_variable(environment_t *environment, char *argument)
 
     key = strtok(argument, "=");
     value = strtok(NULL, "\n");
-    if (key == NULL || value == NULL) {
+    if (key == NULL || value == NULL || my_str_isupper(key) != TRUE) {
         if (key != NULL)
             free(key);
         if (value != NULL)

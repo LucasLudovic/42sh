@@ -9,6 +9,8 @@
     #define MY_H
     #define SUCCESS 0
     #define FAILURE 84
+    #define TRUE 1
+    #define FALSE 0
 
 int display_string_colored(char const *str, char *color);
 char *my_nbr_to_str(int number);
