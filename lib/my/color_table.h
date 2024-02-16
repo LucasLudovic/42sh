@@ -7,7 +7,7 @@
 
 #ifndef COLOR_TABLE_H_
     #define COLOR_TABLE_H_
-    #define NB_COLOR 5
+    #define NB_COLOR 6
 
 typedef struct color_table_s {
     char **name;

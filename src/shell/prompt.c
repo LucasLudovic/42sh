@@ -50,9 +50,9 @@ static
 void display_directory(char *current_directory, char *home_directory)
 {
     if (my_strcmp(current_directory, home_directory) == 0)
-        display_string_colored("~", "blue");
+        display_string_colored("~", "cyan");
     else
-        display_string_colored(current_directory, "blue");
+        display_string_colored(current_directory, "cyan");
     my_putchar(' ');
 }
 

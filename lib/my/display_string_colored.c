@@ -29,16 +29,16 @@ void destroy_table(color_table_t *color_table)
 }
 
 static
-color_table_t *initialize_table(color_table_t *color_table)
+void initialize_table(color_table_t *color_table)
 {
     if (color_table == NULL)
-        return NULL;
+        return;
     color_table->name = malloc(sizeof(char *) * NB_COLOR);
     if (color_table->name == NULL)
-        return NULL;
+        return;
     color_table->code = malloc(sizeof(char *) * NB_COLOR);
     if (color_table->name == NULL)
-        return NULL;
+        return;
     color_table->name[0] = my_strdup("red");
     color_table->code[0] = my_strdup("31");
     color_table->name[1] = my_strdup("green");
@@ -47,9 +47,10 @@ color_table_t *initialize_table(color_table_t *color_table)
     color_table->code[2] = my_strdup("33");
     color_table->name[3] = my_strdup("blue");
     color_table->code[3] = my_strdup("34");
-    color_table->name[4] = my_strdup("magenta");
+    color_table->name[4] = my_strdup("purple");
     color_table->code[4] = my_strdup("35");
-    return color_table;
+    color_table->name[5] = my_strdup("cyan");
+    color_table->code[5] = my_strdup("36");
 }
 
 static
