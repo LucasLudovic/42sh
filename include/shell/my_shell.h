@@ -19,5 +19,6 @@ typedef struct shell_s {
 } shell_t;
 
 int my_shell(char **env);
+void print_prompt(shell_t *shell);
 
 #endif

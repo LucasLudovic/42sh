@@ -68,22 +68,16 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
 }
 
 static
-void print_prompt(shell_t *shell)
-{
-    if (shell->exit_status == 0)
-        display_string_colored("~> ", "green");
-    else
-        display_string_colored("x> ", "red");
-}
-
-static
 char **get_user_arguments(char **user_arguments)
 {
     char *user_input = NULL;
     size_t size = 0;
 
-    if (getline(&user_input, &size, stdin) <= 0)
+    if (getline(&user_input, &size, stdin) <= 0) {
+        if (user_input != NULL)
+            free(user_input);
         return NULL;
+    }
     if (user_input == NULL)
         return NULL;
     user_arguments = my_str_to_word_array(user_input);
