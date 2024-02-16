@@ -27,9 +27,28 @@ int destroy_node(environment_t *environment, environment_t *previous_variable,
     return SUCCESS;
 }
 
-int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
+static
+int check_single_variable(shell_t *shell, environment_t *head,
+    char **arguments, int index)
 {
     environment_t *previous_variable = NULL;
+    int number_unset = 0;
+
+    while (shell->environment != NULL) {
+        if (my_strcmp(shell->environment->key, arguments[index]) == 0) {
+            destroy_node(shell->environment, previous_variable, &head);
+            number_unset = 1;
+            break;
+        }
+        previous_variable = shell->environment;
+        shell->environment = shell->environment->next;
+    }
+    shell->environment = head;
+    return number_unset;
+}
+
+int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
+{
     environment_t *head = shell->environment;
     int number_unset = 0;
 
@@ -37,16 +56,7 @@ int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
         nb_arguments < 2)
         return FAILURE;
     for (int i = 0; arguments[i] != NULL; i += 1) {
-        while (shell->environment != NULL) {
-            if (my_strcmp(shell->environment->key, arguments[i]) == 0) {
-                destroy_node(shell->environment, previous_variable, &head);
-                number_unset += 1;
-                break;
-            }
-            previous_variable = shell->environment;
-            shell->environment = shell->environment->next;
-        }
-        shell->environment = head;
+        number_unset += check_single_variable(shell, head, arguments, i);
     }
     shell->environment = head;
     if (number_unset != nb_arguments - 1)

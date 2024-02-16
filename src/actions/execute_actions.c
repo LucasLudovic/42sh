@@ -115,7 +115,6 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
                 nb_arguments);
             return shell->exit_status;
         }
-
     }
     if (execute_from_current_directory(shell, binary_name, arguments) == 0)
         return SUCCESS;
