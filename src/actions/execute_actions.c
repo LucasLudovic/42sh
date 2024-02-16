@@ -90,7 +90,6 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
     binary_absolute_path = get_function_absolute_path(shell->environment,
         arguments);
     if (binary_absolute_path == NULL) {
-        shell->exit_status = FAILURE;
         return display_error("Unable to find the binary\n");
     }
     status = execute_binary(shell, binary_absolute_path, arguments);
@@ -111,7 +110,7 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
         nb_arguments += 1;
     for (int i = 0; i < 5; i += 1) {
         if (my_strcmp(builtin_array->name[i], binary_name) == 0) {
-            shell->exit_status = builtin_array->function[i](shell, arguments,
+            builtin_array->function[i](shell, arguments,
                 nb_arguments);
             return shell->exit_status;
         }

@@ -9,3 +9,4 @@ coding-style-reports.log
 vgcore*
 unit_tests
 bonus
+tests*

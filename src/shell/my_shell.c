@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include "dependencies/which.h"
 #include "dependencies/environment.h"
 #include "builtin/builtin.h"
@@ -85,6 +86,21 @@ char **get_user_arguments(char **user_arguments)
     return user_arguments;
 }
 
+static
+int check_if_tty(shell_t *shell, builtin_t *builtin_array, char ***arguments)
+{
+    struct stat terminal = { 0 };
+
+    fstat(0, &terminal);
+    if (S_ISFIFO(terminal.st_mode)) {
+        *arguments = get_user_arguments(*arguments);
+        execute_action(shell, builtin_array, *arguments);
+        destroy_user_arguments(*arguments);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 int my_shell(char **environment)
 {
     shell_t my_shell = { .alive = TRUE, .environment = NULL,
@@ -95,13 +111,13 @@ int my_shell(char **environment)
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
     my_shell.environment = get_environment(environment);
+    if (check_if_tty(&my_shell, &builtin_array, &arguments) == TRUE)
+        return my_shell.exit_status;
     while (my_shell.alive) {
         print_prompt(&my_shell);
         arguments = get_user_arguments(arguments);
-        if (arguments == NULL) {
-            destroy_end(&my_shell, &my_shell.environment, &builtin_array);
-            return FAILURE;
-        }
+        if (arguments == NULL || arguments[0] == NULL)
+            continue;
         execute_action(&my_shell, &builtin_array, arguments);
         destroy_user_arguments(arguments);
     }
