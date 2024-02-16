@@ -31,18 +31,25 @@ int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
 {
     environment_t *previous_variable = NULL;
     environment_t *head = shell->environment;
+    int number_unset = 0;
 
-    if (shell->environment == NULL || arguments == NULL || nb_arguments != 2)
+    if (shell->environment == NULL || arguments == NULL ||
+        nb_arguments < 2)
         return FAILURE;
-    while (shell->environment != NULL) {
-        if (my_strcmp(shell->environment->key, arguments[1]) == 0) {
-            destroy_node(shell->environment, previous_variable, &head);
-            shell->environment = head;
-            return SUCCESS;
+    for (int i = 0; arguments[i] != NULL; i += 1) {
+        while (shell->environment != NULL) {
+            if (my_strcmp(shell->environment->key, arguments[i]) == 0) {
+                destroy_node(shell->environment, previous_variable, &head);
+                number_unset += 1;
+                break;
+            }
+            previous_variable = shell->environment;
+            shell->environment = shell->environment->next;
         }
-        previous_variable = shell->environment;
-        shell->environment = shell->environment->next;
+        shell->environment = head;
     }
     shell->environment = head;
-    return FAILURE;
+    if (number_unset != nb_arguments - 1)
+        return FAILURE;
+    return SUCCESS;
 }

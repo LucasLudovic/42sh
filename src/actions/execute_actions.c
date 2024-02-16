@@ -110,9 +110,12 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     while (arguments[nb_arguments] != NULL)
         nb_arguments += 1;
     for (int i = 0; i < 5; i += 1) {
-        if (my_strcmp(builtin_array->name[i], binary_name) == 0)
-            return builtin_array->function[i](shell, arguments,
+        if (my_strcmp(builtin_array->name[i], binary_name) == 0) {
+            shell->exit_status = builtin_array->function[i](shell, arguments,
                 nb_arguments);
+            return shell->exit_status;
+        }
+
     }
     if (execute_from_current_directory(shell, binary_name, arguments) == 0)
         return SUCCESS;
