@@ -13,18 +13,6 @@
 #include "my.h"
 
 static
-int check_sign_equal(const char *argument)
-{
-    if (argument == NULL)
-        return FAILURE;
-    for (int i = 0; argument[i] != '\0'; i += 1) {
-        if (argument[i] == '=')
-            return SUCCESS;
-    }
-    return FAILURE;
-}
-
-static
 int check_node(environment_t *environment, char **key, char *value)
 {
     if (my_strcmp(environment->key, *key) == 0) {
@@ -54,14 +42,15 @@ int add_new_variable(environment_t **environment, char *key, char *value)
 }
 
 static
-int add_variable(environment_t *environment, char **arguments)
+int add_variable_and_value(environment_t *environment, char **arguments)
 {
     char *key = NULL;
     char *value = NULL;
 
     key = my_strdup(arguments[1]);
-    value = my_strdup(arguments[2]);
-    if (key == NULL || value == NULL || my_str_isupper(key) != TRUE) {
+    if (arguments[2] != NULL)
+        value = my_strdup(arguments[2]);
+    if (key == NULL) {
         if (key != NULL)
             free(key);
         if (value != NULL)
@@ -79,11 +68,11 @@ int add_variable(environment_t *environment, char **arguments)
 }
 
 int my_setenv(shell_t *shell, char **arguments, int nb_arguments)
-
 {
-    if (shell->environment == NULL || arguments == NULL || nb_arguments != 3)
+    if (shell->environment == NULL || arguments == NULL || nb_arguments < 2 ||
+        nb_arguments > 3)
         return -1;
-    if (add_variable(shell->environment, arguments) == FAILURE)
+    if (add_variable_and_value(shell->environment, arguments) == FAILURE)
         return -1;
     return SUCCESS;
 }

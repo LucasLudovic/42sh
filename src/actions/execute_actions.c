@@ -65,17 +65,25 @@ int check_current_directory(char *file_name)
 }
 
 static
+int check_as_absolute(char *file_name)
+{
+    if (access(file_name, F_OK) == 0)
+        return TRUE;
+    return FALSE;
+}
+
+static
 int execute_from_current_directory(shell_t *shell, char *binary_name,
     char **arguments)
 {
-    if (arguments == NULL || binary_name == NULL ||
-        my_strncmp(binary_name, "./", 2) != 0)
+    if (arguments == NULL || binary_name == NULL)
         return FAILURE;
-    if (my_strlen(binary_name) < 3)
+    if (my_strncmp(binary_name, "./", 2) == 0)
+        binary_name += 2;
+    if (!check_current_directory(binary_name) &&
+        !check_as_absolute(binary_name))
         return FAILURE;
-    if (check_current_directory(binary_name + 2) == FALSE)
-        return FAILURE;
-    return execute_binary(shell, binary_name + 2, arguments);
+    return execute_binary(shell, binary_name, arguments);
 }
 
 static

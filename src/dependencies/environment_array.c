@@ -27,17 +27,18 @@ char *add_single_variable(environment_t *environment, char **array, int pos)
     int key_size = 0;
     int value_size = 0;
 
-    if (environment == NULL || environment->key == NULL ||
-        environment->value == NULL)
+    if (environment == NULL || environment->key == NULL)
         return NULL;
     key_size = my_strlen(environment->key);
-    value_size = my_strlen(environment->value);
+    if (environment->value != NULL)
+        value_size = my_strlen(environment->value);
     array[pos] = malloc(sizeof(char) * (key_size + value_size + 2));
     if (array[pos] == NULL)
         return NULL;
     if (my_strcpy(array[pos], environment->key) == NULL ||
         my_strcat(array[pos], "=") == NULL ||
-        my_strcat(array[pos], environment->value) == NULL) {
+        (my_strcat(array[pos], environment->value) == NULL &&
+        value_size > 0)) {
         free(array[pos]);
         return NULL;
     }
@@ -48,9 +49,8 @@ void destroy_environment_array(char **array)
 {
     if (array == NULL)
         return;
-    for (int i = 0; array[i] != NULL; i += 1) {
+    for (int i = 0; array[i] != NULL; i += 1)
         free(array[i]);
-    }
     free(array);
 }
 

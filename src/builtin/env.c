@@ -14,11 +14,11 @@
 static
 void display_single_node(shell_t *shell)
 {
-    if (shell->environment->key != NULL &&
-        shell->environment->value != NULL) {
+    if (shell->environment != NULL && shell->environment->key != NULL) {
         my_putstr(shell->environment->key);
         my_putchar('=');
-        my_putstr(shell->environment->value);
+        if (shell->environment->value != NULL)
+            my_putstr(shell->environment->value);
         my_putchar('\n');
     }
 }

@@ -5,6 +5,8 @@
 ** Concatenate two strings
 */
 
+#include <stddef.h>
+
 static
 int get_length(char *str)
 {
@@ -30,6 +32,8 @@ char *my_new_strcpy(char *dest, char const *src)
 
 char *my_strcat(char *dest, char const *src)
 {
+    if (dest == NULL || src == NULL)
+        return dest;
     my_new_strcpy(dest + get_length(dest), src);
     return dest;
 }
