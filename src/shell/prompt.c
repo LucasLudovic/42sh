@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include "my.h"
 #include "shell/my_shell.h"
@@ -35,49 +36,6 @@ void remove_home_from_directory(char *home_directory, char **current_directory,
         *current_directory += *movement;
     else
         *movement = 0;
-}
-
-static
-void read_git_file(void)
-{
-    int file = 0;
-    char line[17] = { 0 };
-    size_t size = 16;
-    char branch = 'a';
-
-    file = open(".git/HEAD", O_RDONLY);
-    if (file <= 0)
-        return;
-    if (read(file, line, size) == -1) {
-        close(file);
-        return;
-    }
-    line[size] = '\0';
-    if (my_strncmp(line, "ref: refs/heads/main", size) == 0) {
-        while (read(file, &branch, 1) > 0)
-        {
-            my_putchar(branch);
-        }
-    }
-    close(file);
-}
-
-static
-void display_git_branch(void)
-{
-    char *current_directory = NULL;
-
-    current_directory = getcwd(current_directory, 0);
-    if (current_directory == NULL)
-        return;
-    do {
-        if (access(".git/HEAD", F_OK) == 0) {
-            read_git_file();
-            break;
-        }
-    } while (chdir("..") == 0);
-    chdir(current_directory);
-    free(current_directory);
 }
 
 static
@@ -120,7 +78,6 @@ void print_prompt(shell_t *shell)
         return;
     remove_home_from_directory(home_directory, &current_directory, &movement);
     display_directory(current_directory, home_directory);
-    display_git_branch();
     current_directory -= movement;
     free(current_directory);
     shell->environment = head;

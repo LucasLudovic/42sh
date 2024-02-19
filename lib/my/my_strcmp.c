@@ -5,10 +5,14 @@
 ** Compare if a string is greater than the other
 */
 
+#include <stddef.h>
+
 int my_strcmp(char const *s1, char const *s2)
 {
     int i = 0;
 
+    if (s1 == NULL || s2 == NULL)
+        return -1;
     for (i = 0; s1[i] != '\0'; i += 1) {
         if (s2[i] == '\0')
             return (s1[i] - s2[i]);
