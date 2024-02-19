@@ -39,10 +39,8 @@ int return_previous_directory(shell_t *shell, char **previous_path)
     if (shell->previous_path == NULL)
         return FAILURE;
     *previous_path = getcwd(*previous_path, 0);
-    if (chdir(shell->previous_path) != 0) {
-        shell->exit_status = FAILURE;
+    if (chdir(shell->previous_path) != 0)
         return FAILURE;
-    }
     update_previous_path(shell, *previous_path);
     return SUCCESS;
 }
@@ -75,7 +73,6 @@ int change_from_path(shell_t *shell, char **destination, int need_to_free)
     if (chdir(*destination) != 0) {
         if (need_to_free == TRUE && *destination != NULL)
             free(destination);
-        shell->exit_status = FAILURE;
         return display_error("Unable to change the directory\n");
     }
     if (need_to_free == TRUE && *destination != NULL)

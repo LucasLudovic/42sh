@@ -89,10 +89,8 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
         return FAILURE;
     binary_absolute_path = get_function_absolute_path(shell->environment,
         arguments);
-    if (binary_absolute_path == NULL) {
-        shell->exit_status = FAILURE;
+    if (binary_absolute_path == NULL)
         return display_error("Unable to find the binary\n");
-    }
     status = execute_binary(shell, binary_absolute_path, arguments);
     if (binary_absolute_path != NULL)
         free(binary_absolute_path);

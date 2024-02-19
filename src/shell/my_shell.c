@@ -104,7 +104,7 @@ int check_if_tty(shell_t *shell, builtin_t *builtin_array, char ***arguments)
 int my_shell(char **environment)
 {
     shell_t my_shell = { .alive = TRUE, .environment = NULL,
-        .exit_status = 0, .previous_path = NULL, .alias = NULL };
+        .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
 
