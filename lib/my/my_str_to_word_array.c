@@ -87,13 +87,25 @@ int divide_into_array(char **ptr_to_return, char *arr, int number_of_words)
 }
 
 static
+char *replace_tab(char *str)
+{
+    if (str == NULL)
+        return NULL;
+    for (int i = 0; str[i] != '\0'; i += 1) {
+        if (str[i] == '\t')
+            str[i] = ' ';
+    }
+    return str;
+}
+
+static
 char *clean_string(char *str)
 {
     char *new_string = NULL;
     int size_string = 0;
     int clean_index = 0;
 
-    if (str == NULL)
+    if (replace_tab(str) == NULL)
         return NULL;
     size_string = my_strlen(str);
     if (str <= 0)
