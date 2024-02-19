@@ -49,6 +49,18 @@ void destroy_user_arguments(char **user_arguments)
 }
 
 static
+int check_if_tty(void)
+{
+    struct stat terminal = { 0 };
+
+    fstat(0, &terminal);
+    if (S_ISFIFO(terminal.st_mode)) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static
 int initialize_function_pointer_array(builtin_t *builtin_array)
 {
     builtin_array->name[0] = my_strdup("env");
@@ -69,7 +81,7 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
 }
 
 static
-char **get_user_arguments(char **user_arguments)
+char **get_user_arguments(shell_t *shell, char **user_arguments)
 {
     char *user_input = NULL;
     size_t size = 0;
@@ -77,6 +89,8 @@ char **get_user_arguments(char **user_arguments)
     if (getline(&user_input, &size, stdin) <= 0) {
         if (user_input != NULL)
             free(user_input);
+        if (check_if_tty())
+            shell->alive = FALSE;
         return NULL;
     }
     if (user_input == NULL)
@@ -84,21 +98,6 @@ char **get_user_arguments(char **user_arguments)
     user_arguments = my_str_to_word_array(user_input);
     free(user_input);
     return user_arguments;
-}
-
-static
-int check_if_tty(shell_t *shell, builtin_t *builtin_array, char ***arguments)
-{
-    struct stat terminal = { 0 };
-
-    fstat(0, &terminal);
-    if (S_ISFIFO(terminal.st_mode)) {
-        *arguments = get_user_arguments(*arguments);
-        execute_action(shell, builtin_array, *arguments);
-        destroy_user_arguments(*arguments);
-        return TRUE;
-    }
-    return FALSE;
 }
 
 int my_shell(char **environment)
@@ -111,11 +110,10 @@ int my_shell(char **environment)
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
     my_shell.environment = get_environment(environment);
-    if (check_if_tty(&my_shell, &builtin_array, &arguments) == TRUE)
-        return my_shell.exit_status;
     while (my_shell.alive) {
-        print_prompt(&my_shell);
-        arguments = get_user_arguments(arguments);
+        if (!check_if_tty())
+            print_prompt(&my_shell);
+        arguments = get_user_arguments(&my_shell, arguments);
         if (arguments == NULL || arguments[0] == NULL)
             continue;
         execute_action(&my_shell, &builtin_array, arguments);
