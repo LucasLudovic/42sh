@@ -42,6 +42,19 @@ int add_new_variable(environment_t **environment, char *key, char *value)
 }
 
 static
+int destroy_set_variables(char *key, char *value)
+{
+    if (key == NULL) {
+        if (key != NULL)
+            free(key);
+        if (value != NULL)
+            free(value);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+static
 int add_variable_and_value(environment_t *environment, char **arguments)
 {
     char *key = NULL;
@@ -50,13 +63,8 @@ int add_variable_and_value(environment_t *environment, char **arguments)
     key = my_strdup(arguments[1]);
     if (arguments[2] != NULL)
         value = my_strdup(arguments[2]);
-    if (key == NULL) {
-        if (key != NULL)
-            free(key);
-        if (value != NULL)
-            free(value);
+    if (destroy_set_variables(key, value) == FAILURE)
         return FAILURE;
-    }
     while (environment->next != NULL) {
         if (check_node(environment, &key, value) == SUCCESS)
             return SUCCESS;
