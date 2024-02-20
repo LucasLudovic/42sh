@@ -15,6 +15,7 @@ int exit_shell(shell_t *shell, UNUSED char **arguments, int nb_arguments)
     if (nb_arguments != 1)
         return FAILURE;
     shell->alive = FALSE;
+    shell->exit_status = SUCCESS;
     my_putstr("exit\n");
     return SUCCESS;
 }
