@@ -66,7 +66,7 @@ static
 char *retrieve_function_path(char *path, const char *file_name)
 {
     char *solo_path = NULL;
-    char *absolute_file_path = NULL;
+    char *absolute_path = NULL;
     DIR *directory = NULL;
 
     if (path == NULL || file_name == NULL)
@@ -74,14 +74,12 @@ char *retrieve_function_path(char *path, const char *file_name)
     solo_path = strtok(path, ":");
     while (solo_path != NULL) {
         directory = opendir(solo_path);
-        if (directory == NULL) {
-            display_error("Wrong directory in PATH\n");
-            return NULL;
+        if (directory != NULL) {
+            absolute_path = get_file_path(directory, solo_path, file_name);
+            closedir(directory);
         }
-        absolute_file_path = get_file_path(directory, solo_path, file_name);
-        closedir(directory);
-        if (absolute_file_path != NULL)
-            return absolute_file_path;
+        if (absolute_path != NULL)
+            return absolute_path;
         solo_path = strtok(NULL, ":");
     }
     return NULL;
