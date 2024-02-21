@@ -18,12 +18,15 @@
 #include "my.h"
 
 static
-void display_error_message(int status)
+int display_error_message(shell_t *shell, int status)
 {
+    if (shell != NULL)
+        shell->exit_status = (status >= 256) ? status / 256 : status;
     if (status == 136)
         display_error("Floating exception (core dumped)\n");
     if (status == 139)
         display_error("Segmentation fault (core dumped)\n");
+    return SUCCESS;
 }
 
 static
@@ -47,9 +50,7 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     } else
     waitpid(-1, &wait_status, 0);
     destroy_environment_array(environment_array);
-    shell->exit_status = (wait_status >= 256) ? wait_status / 256 : wait_status;
-    display_error_message(shell->exit_status);
-    return SUCCESS;
+    return display_error_message(shell, wait_status);
 }
 
 static
@@ -97,6 +98,17 @@ int execute_from_current_directory(shell_t *shell, char *binary_name,
 }
 
 static
+void check_absolute_path(shell_t *shell, char **arguments, char *binary_name)
+{
+    if (my_str_isprintable(binary_name) &&
+        my_strlen(binary_name) > 0 && binary_name[0] != '\n') {
+        shell->exit_status = 1;
+        display_error(arguments[0]);
+        display_error(": command not found.\n");
+    }
+}
+
+static
 int execute_from_path(shell_t *shell, UNUSED char *binary_name,
     char **arguments)
 {
@@ -111,11 +123,7 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
     binary_absolute_path = get_function_absolute_path(shell->environment,
         arguments);
     if (binary_absolute_path == NULL) {
-        if (my_str_isprintable(binary_name) && my_strlen(binary_name) > 0 && binary_name[0] != '\n') {
-            shell->exit_status = 1;
-            display_error(arguments[0]);
-            return display_error(": command not found.\n");
-        }
+        check_absolute_path(shell, arguments, binary_name);
         return FAILURE;
     }
     status = execute_binary(shell, binary_absolute_path, arguments);
