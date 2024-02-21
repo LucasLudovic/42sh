@@ -53,8 +53,10 @@ int my_unsetenv(shell_t *shell, char **arguments, int nb_arguments)
     int number_unset = 0;
 
     if (shell->environment == NULL || arguments == NULL ||
-        nb_arguments < 2)
-        return FAILURE;
+        nb_arguments < 2) {
+        shell->exit_status = 1;
+        return display_error("unsetenv: Too few arguments.\n");
+    }
     for (int i = 0; arguments[i] != NULL; i += 1) {
         number_unset += check_single_variable(shell, head, arguments, i);
     }
