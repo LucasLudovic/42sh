@@ -18,6 +18,15 @@
 #include "my.h"
 
 static
+void display_error_message(int status)
+{
+    if (status == 136)
+        display_error("Floating exception (core dumped)\n");
+    if (status == 139)
+        display_error("Segmentation fault (core dumped)\n");
+}
+
+static
 int execute_binary(shell_t *shell, char *path, char **arguments)
 {
     pid_t current_pid = 0;
@@ -35,10 +44,11 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     if (current_pid == 0) {
         execve(path, arguments, environment_array);
         exit(FAILURE);
-    }
+    } else
     waitpid(-1, &wait_status, 0);
     destroy_environment_array(environment_array);
-    shell->exit_status = wait_status;
+    shell->exit_status = (wait_status >= 256) ? wait_status / 256 : wait_status;
+    display_error_message(shell->exit_status);
     return SUCCESS;
 }
 
@@ -95,11 +105,18 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
 
     if (shell == NULL || arguments == NULL)
         return FAILURE;
+    if (arguments[0] == NULL || my_strlen(arguments[0]) <= 0 ||
+        my_str_isprintable(arguments[0]) == FALSE)
+        return FAILURE;
     binary_absolute_path = get_function_absolute_path(shell->environment,
         arguments);
     if (binary_absolute_path == NULL) {
-        shell->exit_status = 1;
-        return display_error("Unable to find the binary\n");
+        if (my_str_isprintable(binary_name) && my_strlen(binary_name) > 0 && binary_name[0] != '\n') {
+            shell->exit_status = 1;
+            display_error(arguments[0]);
+            return display_error(": command not found.\n");
+        }
+        return FAILURE;
     }
     status = execute_binary(shell, binary_absolute_path, arguments);
     if (binary_absolute_path != NULL)
@@ -112,6 +129,7 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     int nb_arguments = 0;
     char *binary_name = NULL;
 
+    shell->exit_status = 0;
     if (shell == NULL || arguments == NULL || arguments[0] == NULL)
         return FAILURE;
     binary_name = arguments[0];

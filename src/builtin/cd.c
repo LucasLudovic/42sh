@@ -7,6 +7,7 @@
 
 #include <unistd.h>
 #include <stddef.h>
+#include "dependencies/environment.h"
 #include "shell/my_shell.h"
 #include "builtin/setenv.h"
 #include "my_macros.h"
@@ -38,6 +39,8 @@ void update_previous_path(shell_t *shell, char *previous_path)
         free(shell->previous_path);
     shell->previous_path = previous_path;
     my_setenv(shell, new_old_pwd, 3);
+    for (size_t i = 0; new_old_pwd[i] != NULL; i += 1)
+        free(new_old_pwd[i]);
 }
 
 static
