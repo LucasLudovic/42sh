@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stddef.h>
 #include "shell/my_shell.h"
+#include "builtin/setenv.h"
 #include "my_macros.h"
 #include "my.h"
 #include <stdlib.h>
@@ -26,11 +27,17 @@ char *get_home(environment_t *environment)
 static
 void update_previous_path(shell_t *shell, char *previous_path)
 {
+    char *new_old_pwd[4] = { NULL };
+
     if (previous_path == NULL)
         previous_path = getcwd(previous_path, 0);
+    new_old_pwd[0] = my_strdup("setenv");
+    new_old_pwd[1] = my_strdup("OLDPWD");
+    new_old_pwd[2] = my_strdup(previous_path);
     if (shell->previous_path != NULL)
         free(shell->previous_path);
     shell->previous_path = previous_path;
+    my_setenv(shell, new_old_pwd, 3);
 }
 
 static
@@ -92,7 +99,7 @@ int change_directory(shell_t *shell, char **arguments, int nb_arguments)
         return FAILURE;
     home_directory = get_home(shell->environment);
     if (home_directory == NULL && (nb_arguments == 1 ||
-            (nb_arguments == 2 && my_strcmp(arguments[1], "~") == 0)))
+        (nb_arguments == 2 && my_strcmp(arguments[1], "~") == 0)))
         return FAILURE;
     if (nb_arguments == 2 && my_strcmp(arguments[1], "-") == 0)
         return return_previous_directory(shell, &previous_path);
