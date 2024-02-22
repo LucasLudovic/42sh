@@ -20,6 +20,10 @@ void destroy_single_node(environment_t **shell_environment)
         destroy_single_node(&(*shell_environment)->next);
     if ((*shell_environment)->key != NULL)
         free((*shell_environment)->key);
+    if ((*shell_environment)->value != NULL)
+        free((*shell_environment)->value);
+    (*shell_environment)->key = NULL;
+    (*shell_environment)->value = NULL;
     free(*shell_environment);
 }
 
@@ -34,7 +38,7 @@ static
 environment_t *copy_single_variable(environment_t *environment, char *variable)
 {
     environment->key = strtok(variable, "=");
-    environment->value = strtok(NULL, "\n");
+    environment->value = my_strdup(strtok(NULL, "\n"));
     return environment;
 }
 

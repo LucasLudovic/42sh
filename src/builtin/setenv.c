@@ -20,6 +20,8 @@ int check_node(environment_t *environment, char **key, char *value)
             environment->next = NULL;
         if (environment->key != NULL)
             free(environment->key);
+        if (environment->value != NULL)
+            free(environment->value);
         environment->key = *key;
         environment->value = value;
         return SUCCESS;
@@ -32,23 +34,27 @@ int add_new_variable(environment_t **environment, char *key, char *value)
 {
     if (environment == NULL)
         return FAILURE;
-    *environment = malloc(sizeof(environment_t));
+    if (environment != NULL)
+        *environment = malloc(sizeof(environment_t));
+    (*environment)->key = NULL;
+    (*environment)->value = NULL;
     if (*environment == NULL)
         return FAILURE;
     (*environment)->key = key;
+    if ((*environment)->value != NULL)
+        free((*environment)->value);
     (*environment)->value = value;
     (*environment)->next = NULL;
     return SUCCESS;
 }
 
 static
-int destroy_set_variables(char *key, char *value)
+int destroy_set_variables(char *key, char **value)
 {
     if (key == NULL) {
-        if (key != NULL)
-            free(key);
-        if (value != NULL)
-            free(value);
+        if (*value != NULL)
+            free(*value);
+        *value = NULL;
         return FAILURE;
     }
     return SUCCESS;
@@ -63,7 +69,7 @@ int add_variable_and_value(environment_t *environment, char **arguments)
     key = my_strdup(arguments[1]);
     if (arguments[2] != NULL)
         value = my_strdup(arguments[2]);
-    if (destroy_set_variables(key, value) == FAILURE)
+    if (destroy_set_variables(key, &value) == FAILURE)
         return FAILURE;
     while (environment->next != NULL) {
         if (check_node(environment, &key, value) == SUCCESS)
