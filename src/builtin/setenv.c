@@ -88,8 +88,13 @@ int my_setenv(shell_t *shell, char **arguments, int nb_arguments)
         nb_arguments > 3)
         if (nb_arguments == 1) {
             env(shell, arguments, 1);
+            display_error("setenv: Variable name must contain alphanumeric characters.\n");
             return -1;
         }
+    if (!my_str_is_alpha_num(arguments[1])) {
+        shell->exit_status = 1;
+        return -1;
+    }
     if (add_variable_and_value(shell->environment, arguments) == FAILURE)
         return -1;
     return SUCCESS;

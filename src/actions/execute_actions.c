@@ -5,6 +5,8 @@
 ** Execute the actions for the minishell project
 */
 
+#include <iso646.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -18,14 +20,21 @@
 #include "my.h"
 
 static
-int display_error_message(shell_t *shell, int status)
+int display_error_message(shell_t *shell, char *binary_name, int status)
 {
     if (shell != NULL)
         shell->exit_status = (status >= 256) ? status / 256 : status;
+    if (shell->exit_status == SIGSEGV)
+        shell->exit_status = 139;
     if (status == 136)
         display_error("Floating exception (core dumped)\n");
     if (status == 139)
         display_error("Segmentation fault (core dumped)\n");
+    if (shell->exit_status == 1) {
+        if (binary_name != NULL)
+            display_error(binary_name);
+        return display_error(": Permission denied.\n");
+    }
     return SUCCESS;
 }
 
@@ -41,7 +50,7 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     environment_array = convert_environment_to_array(shell->environment);
     if (access(path, X_OK) != 0 || environment_array == NULL) {
         destroy_environment_array(environment_array);
-        return display_error("Can't access the file\n");
+        return display_error_message(shell, arguments[0], 1);
     }
     current_pid = fork();
     if (current_pid == 0) {
@@ -50,7 +59,7 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     } else
     waitpid(-1, &wait_status, 0);
     destroy_environment_array(environment_array);
-    return display_error_message(shell, wait_status);
+    return display_error_message(shell, arguments[0], wait_status);
 }
 
 static
@@ -104,7 +113,7 @@ void check_absolute_path(shell_t *shell, char **arguments, char *binary_name)
         my_strlen(binary_name) > 0 && binary_name[0] != '\n') {
         shell->exit_status = 1;
         display_error(arguments[0]);
-        display_error(": command not found.\n");
+        display_error(": Command not found.\n");
     }
 }
 
@@ -113,7 +122,7 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
     char **arguments)
 {
     char *binary_absolute_path = NULL;
-    int status = FAILURE;
+    int status = 0;
 
     if (shell == NULL || arguments == NULL)
         return FAILURE;
@@ -124,7 +133,7 @@ int execute_from_path(shell_t *shell, UNUSED char *binary_name,
         arguments);
     if (binary_absolute_path == NULL) {
         check_absolute_path(shell, arguments, binary_name);
-        return FAILURE;
+        return SUCCESS;
     }
     status = execute_binary(shell, binary_absolute_path, arguments);
     if (binary_absolute_path != NULL)
@@ -152,5 +161,6 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     }
     if (execute_from_current_directory(shell, binary_name, arguments) == 0)
         return SUCCESS;
-    return execute_from_path(shell, binary_name, arguments);
+    return (shell->exit_status == 1) ?
+        SUCCESS : execute_from_path(shell, binary_name, arguments);
 }
