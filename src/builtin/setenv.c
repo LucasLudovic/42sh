@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <builtin/env.h>
 #include "shell/my_shell.h"
 #include "dependencies/environment.h"
 #include "my_macros.h"
@@ -85,7 +86,10 @@ int my_setenv(shell_t *shell, char **arguments, int nb_arguments)
 {
     if (shell->environment == NULL || arguments == NULL || nb_arguments < 2 ||
         nb_arguments > 3)
-        return -1;
+        if (nb_arguments == 1) {
+            env(shell, arguments, 1);
+            return -1;
+        }
     if (add_variable_and_value(shell->environment, arguments) == FAILURE)
         return -1;
     return SUCCESS;
