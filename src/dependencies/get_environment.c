@@ -38,7 +38,11 @@ static
 environment_t *copy_single_variable(environment_t *environment, char *variable)
 {
     environment->key = strtok(variable, "=");
-    environment->value = my_strdup(strtok(NULL, "\n"));
+    environment->value = strtok(NULL, "\n");
+    if (my_strlen(environment->value) <= 0)
+        environment->value = NULL;
+    else
+        environment->value = my_strdup(environment->value);
     return environment;
 }
 
