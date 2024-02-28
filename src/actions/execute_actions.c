@@ -24,8 +24,6 @@ int display_error_message(shell_t *shell, char *binary_name, int status)
 {
     if (shell != NULL)
         shell->exit_status = (status >= 256) ? status / 256 : status;
-    if (shell->exit_status == SIGSEGV)
-        shell->exit_status = 139;
     if (status == 136)
         display_error("Floating exception (core dumped)\n");
     if (status == 139)
