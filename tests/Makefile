@@ -5,16 +5,19 @@
 ## make
 ##
 
-SRC	=	../src/attack.c
-SRC	+=	../src/connection.c
-SRC	+=	../src/defense.c
-SRC	+=	../src/gameboard.c
-SRC	+=	../src/gameloop.c
-SRC	+=	../src/my_navy.c
-SRC	+=	../src/transform_map.c
-SRC	+=	../src/retrieve_info.c
-SRC	+=	test_transform_map.c
-SRC	+=	test_info.c
+SRC	=	../src/actions/execute_actions.c
+SRC	+=	../src/builtin/alias.c
+SRC	+=	../src/builtin/cd.c
+SRC	+=	../src/builtin/env.c
+SRC	+=	../src/builtin/exit.c
+SRC	+=	../src/builtin/setenv.c
+SRC	+=	../src/builtin/unsetenv.c
+SRC	+=	../src/dependencies/environment_array.c
+SRC	+=	../src/dependencies/get_environment.c
+SRC	+=	../src/dependencies/which.c
+SRC	+=	../src/shell/my_shell.c
+SRC	+=	../src/shell/prompt.c
+SRC	+=	actions/tests_execute_actions.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -39,10 +42,8 @@ clean:
 
 fclean:	clean
 	@	rm -f $(NAME)
-	@	rm -f ../src/*.gcno
-	@	rm -f ../src/*.gcda
-	@	rm -f *.gcno
-	@	rm -f *.gcda
+	@	find .. -name *.gcno -delete
+	@	find .. -name *.gcda -delete
 	@	rm -f ../$(NAME)
 
 re:	fclean all
