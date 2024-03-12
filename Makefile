@@ -17,6 +17,7 @@ SRC	+=	src/builtin/setenv.c
 SRC	+=	src/builtin/unsetenv.c
 SRC	+=	src/builtin/exit.c
 SRC	+=	src/builtin/cd.c
+SRC	+=	src/parser/parser.c
 SRC	+=	src/actions/execute_actions.c
 
 OBJ	=	$(SRC:.c=.o)

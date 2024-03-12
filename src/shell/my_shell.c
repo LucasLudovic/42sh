@@ -16,6 +16,7 @@
 #include "builtin/unsetenv.h"
 #include "builtin/exit.h"
 #include "builtin/cd.h"
+#include "parser/parser.h"
 #include "actions/execute_actions.h"
 #include "shell/my_shell.h"
 #include "my.h"
@@ -93,7 +94,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
     }
     if (user_input == NULL)
         return NULL;
-    user_arguments = my_str_to_word_array(user_input);
+    user_arguments = split_semi_colon2(user_input);
     free(user_input);
     return user_arguments;
 }
@@ -104,6 +105,7 @@ int my_shell(char **environment)
         .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
+    char **split_arguments = NULL;
 
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
@@ -112,9 +114,15 @@ int my_shell(char **environment)
         if (!check_if_tty())
             print_prompt(&my_shell);
         arguments = get_user_arguments(&my_shell, arguments);
-        if (arguments == NULL || arguments[0] == NULL)
+        if (arguments == NULL)
             continue;
-        execute_action(&my_shell, &builtin_array, arguments);
+        for (size_t i = 0; arguments[i] != NULL; i += 1) {
+            split_arguments = my_str_to_word_array(arguments[i]);
+            if (split_arguments[i] == NULL)
+                continue;
+            execute_action(&my_shell, &builtin_array, split_arguments);
+            destroy_user_arguments(split_arguments);
+        }    
         destroy_user_arguments(arguments);
     }
     destroy_end(&my_shell, &my_shell.environment, &builtin_array);
