@@ -37,11 +37,8 @@ void *my_realloc(void *pointer, size_t size_final, size_t size_initial)
         return pointer;
     if (size_final < size_initial)
         new_pointer = my_memcpy(new_pointer, pointer, size_final);
-    else {
+    else
         new_pointer = my_memcpy(new_pointer, pointer, size_initial);
-        for (size_t i = size_initial; i < size_final; i += 1)
-            new_pointer[i] = 0;
-    }
     if (new_pointer == NULL)
         return pointer;
     free(pointer);

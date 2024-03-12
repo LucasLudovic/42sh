@@ -8,7 +8,6 @@
 #ifndef PARSER_H_
     #define PARSER_H_
 
-char ***parse_values(char **arguments);
-char **split_semi_colon2(char *str);
- 
+char **parse_semicolon(char *str);
+
 #endif
