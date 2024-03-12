@@ -55,7 +55,7 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
         execve(path, arguments, environment_array);
         exit(FAILURE);
     } else
-    waitpid(-1, &wait_status, 0);
+        waitpid(-1, &wait_status, 0);
     destroy_environment_array(environment_array);
     return display_error_message(shell, arguments[0], wait_status);
 }
