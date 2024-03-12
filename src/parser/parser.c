@@ -54,6 +54,7 @@ char **split_semi_colon2(char *str)
     char **split_str = NULL;
     int nb_quotes = 0;
     int number_str = 1;
+    int previous_position = 0;
 
     if (str == NULL)
         return NULL;
@@ -66,10 +67,14 @@ char **split_semi_colon2(char *str)
         if (str[i] == '"')
             nb_quotes += 1;
         if (str[i] == ';' && nb_quotes % 2 == 0) {
-            split_str = my_realloc(split_str, sizeof(char *) * (number_str + 1), sizeof(char *) * (number_str + 2));
-            split_str[number_str - 1][i] = '\0';
-            split_str[number_str] = my_strdup(&str[i + 1]);
+            split_str = my_realloc(split_str, sizeof(char *) * (number_str + 2), sizeof(char *) * number_str);
+            if (split_str == NULL)
+                return NULL;
+            split_str[number_str - 1][i - previous_position] = '\0';
+            split_str[number_str] = my_strdup(&(str[i + 1]));
             split_str[number_str + 1] = NULL;
+            printf("test : %s\n", split_str[number_str - 1]);
+            previous_position = i + 1;
             number_str += 1;
         }
     }

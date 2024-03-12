@@ -118,7 +118,7 @@ int my_shell(char **environment)
             continue;
         for (size_t i = 0; arguments[i] != NULL; i += 1) {
             split_arguments = my_str_to_word_array(arguments[i]);
-            if (split_arguments[i] == NULL)
+            if (split_arguments[0] == NULL)
                 continue;
             execute_action(&my_shell, &builtin_array, split_arguments);
             destroy_user_arguments(split_arguments);

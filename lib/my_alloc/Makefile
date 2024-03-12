@@ -14,7 +14,7 @@ NAME	=	libmy_alloc.a
 all:	$(NAME)
 
 $(NAME):
-	@gcc -c $(SRC)
+	@gcc -g3 -c $(SRC)
 	@ar rc $(NAME) $(OBJ)
 	@cp $(NAME) ../
 	@cp my_alloc.h ../../include/
