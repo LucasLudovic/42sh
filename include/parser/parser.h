@@ -9,5 +9,6 @@
     #define PARSER_H_
 
 char **parse_semicolon(char *str);
+char **parse_double_left_redirection(char *str);
 
 #endif

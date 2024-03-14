@@ -106,6 +106,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     char **split_arguments = NULL;
 
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
+        parse_double_left_redirection(arguments[i]);
         split_arguments = my_str_to_word_array(arguments[i]);
         execute_action(my_shell, builtin_array, split_arguments);
         destroy_user_arguments(split_arguments);

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** Minishell2
 ** File description:
-** Parser
+** Split selicolon
 */
 
 #include <stddef.h>
