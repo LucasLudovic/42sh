@@ -10,5 +10,6 @@
 
 char **parse_semicolon(char *str);
 char **parse_double_left_redirection(char *str);
+char **parse_double_right_redirection(char *str, int *fd);
 
 #endif

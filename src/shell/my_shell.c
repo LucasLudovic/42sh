@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "dependencies/environment.h"
 #include "builtin/builtin.h"
 #include "builtin/env.h"
@@ -100,13 +102,29 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
 }
 
 static
+char *check_redirection(char *arguments, int *fd)
+{
+    if (arguments == NULL || fd == NULL)
+        return NULL;
+    for (size_t j = 0; arguments[j] != '\0'; j += 1) {
+        if (arguments[j] == '<' && arguments[j + 1] == '<')
+            parse_double_left_redirection(arguments);
+        if (arguments[j] == '>' && arguments[j + 1] == '>')
+            parse_double_right_redirection(arguments, fd);
+    }
+    return arguments;
+}
+
+static
 void execute_single_instruction(char **arguments, shell_t *my_shell,
     builtin_t *builtin_array)
 {
     char **split_arguments = NULL;
+    int output_fd = STDOUT_FILENO;
 
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        parse_double_left_redirection(arguments[i]);
+        check_redirection(arguments[i], &output_fd);
+        printf("Test : %i\n", output_fd);
         split_arguments = my_str_to_word_array(arguments[i]);
         execute_action(my_shell, builtin_array, split_arguments);
         destroy_user_arguments(split_arguments);
