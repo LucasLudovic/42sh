@@ -13,7 +13,20 @@
 #include "my.h"
 
 static
-size_t compare_user_input(char *pattern, size_t address_parsed)
+ssize_t check_single_pattern(char *user_input, char *pattern,
+    int address_parsed)
+{
+    if (my_strncmp(user_input, pattern, my_strlen(user_input)) == 0
+        && my_strlen(user_input) == my_strlen(pattern)) {
+        free(user_input);
+        free(pattern);
+        return address_parsed;
+    }
+    return -1;
+}
+
+static
+ssize_t compare_user_input(char *pattern, ssize_t address_parsed)
 {
     char *user_input = NULL;
     size_t size = 0;
@@ -28,10 +41,12 @@ size_t compare_user_input(char *pattern, size_t address_parsed)
             return -1;
         if (user_input[my_strlen(user_input) - 1] == '\n')
             user_input[my_strlen(user_input) - 1] = '\0';
-        if (my_strncmp(user_input, pattern, my_strlen(user_input)) == 0
-            && my_strlen(user_input) == my_strlen(pattern))
+        if (check_single_pattern(user_input, pattern, address_parsed) != -1)
             return address_parsed;
     }
+    if (user_input != NULL)
+        free(user_input);
+    free(pattern);
     return 0;
 }
 
@@ -50,7 +65,7 @@ int search_pattern(char *str)
 {
     char *pattern = NULL;
     int character_added = 0;
-    size_t address_parsed = 0;
+    ssize_t address_parsed = 0;
 
     if (str == NULL || str[0] == '\0')
         return 0;
