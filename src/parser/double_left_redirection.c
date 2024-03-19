@@ -36,6 +36,16 @@ size_t compare_user_input(char *pattern, size_t address_parsed)
 }
 
 static
+void update_pattern(char *pattern, char *str, int *character_added, int index)
+{
+    if (pattern == NULL || str == NULL || character_added == NULL)
+        return;
+    pattern[*character_added] = str[index];
+    pattern[*character_added + 1] = '\0';
+    *character_added += 1;
+}
+
+static
 int search_pattern(char *str)
 {
     char *pattern = NULL;
@@ -53,9 +63,7 @@ int search_pattern(char *str)
             pattern = malloc(sizeof(char) * (my_strlen(str) + 1));
         if (pattern == NULL)
             return -1;
-        pattern[character_added] = str[i];
-        pattern[character_added + 1] = '\0';
-        character_added += 1;
+        update_pattern(pattern, str, &character_added, i);
         address_parsed = i + 1;
     }
     return compare_user_input(pattern, address_parsed);

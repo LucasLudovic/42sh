@@ -126,12 +126,17 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
         check_redirection(arguments[i], &output_fd);
         split_arguments = my_str_to_word_array(arguments[i]);
-        save_stdout = dup(STDOUT_FILENO);
-        dup2(output_fd, STDOUT_FILENO);
+        if (output_fd != STDOUT_FILENO) {
+            save_stdout = dup(STDOUT_FILENO);
+            dup2(output_fd, STDOUT_FILENO);
+        }
         execute_action(my_shell, builtin_array, split_arguments);
         destroy_user_arguments(split_arguments);
-        dup2(save_stdout, STDOUT_FILENO);
-        close(save_stdout);
+        if (output_fd != STDOUT_FILENO) {
+            dup2(save_stdout, STDOUT_FILENO);
+            close(output_fd);
+            close(save_stdout);
+        }
     }
 }
 

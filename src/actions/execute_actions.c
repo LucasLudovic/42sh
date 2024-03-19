@@ -47,7 +47,6 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
         return FAILURE;
     environment_array = convert_environment_to_array(shell->environment);
     if (access(path, X_OK) != 0 || environment_array == NULL) {
-        printf("Path\n");
         destroy_environment_array(environment_array);
         return display_error_message(shell, arguments[0], 1);
     }
