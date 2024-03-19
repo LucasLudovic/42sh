@@ -112,7 +112,7 @@ int check_redirection(char **every_arguments, char *arguments, int *fd)
         return FAILURE;
     for (size_t j = 0; arguments[j] != '\0'; j += 1) {
         if (arguments[j] == '<' && arguments[j + 1] == '<')
-            parse_double_left_redirection(arguments);
+            parse_double_left_redirection(&arguments[j]);
         if (arguments[j] == '>' && arguments[j + 1] == '>')
             parse_double_right_redirection(arguments, fd);
         if (arguments[j] == '>' && arguments[j + 1] != '>')
