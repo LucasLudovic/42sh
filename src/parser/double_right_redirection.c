@@ -41,7 +41,7 @@ void open_redirection_fd(char *str, int *fd)
     }
     if (file_name[my_strlen(file_name) - 1] == '\n')
         file_name[my_strlen(file_name) - 1] = '\0';
-    *fd = open(file_name, O_RDWR | O_CREAT,
+    *fd = open(file_name, O_RDWR | O_APPEND | O_CREAT,
         S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     free(file_name);
 }
