@@ -20,6 +20,7 @@ SRC	+=	src/builtin/cd.c
 SRC	+=	src/parser/semicolon.c
 SRC	+=	src/parser/double_left_redirection.c
 SRC	+=	src/parser/double_right_redirection.c
+SRC	+=	src/parser/check_ambiguity.c
 SRC	+=	src/actions/execute_actions.c
 
 OBJ	=	$(SRC:.c=.o)

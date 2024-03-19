@@ -102,17 +102,21 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
 }
 
 static
-char *check_redirection(char *arguments, int *fd)
+int check_redirection(char **every_arguments, char *arguments, int *fd)
 {
+    if (every_arguments == NULL)
+        return FAILURE;
+    if (check_ambiguity(every_arguments) == TRUE)
+        return FAILURE;
     if (arguments == NULL || fd == NULL)
-        return NULL;
+        return FAILURE;
     for (size_t j = 0; arguments[j] != '\0'; j += 1) {
         if (arguments[j] == '<' && arguments[j + 1] == '<')
             parse_double_left_redirection(arguments);
         if (arguments[j] == '>' && arguments[j + 1] == '>')
             parse_double_right_redirection(arguments, fd);
     }
-    return arguments;
+    return SUCCESS;
 }
 
 static
@@ -124,7 +128,8 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     int save_stdout = 0;
 
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        check_redirection(arguments[i], &output_fd);
+        if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
+            return;
         split_arguments = my_str_to_word_array(arguments[i]);
         if (output_fd != STDOUT_FILENO) {
             save_stdout = dup(STDOUT_FILENO);
