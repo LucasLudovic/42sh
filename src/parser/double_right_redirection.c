@@ -30,9 +30,9 @@ void open_redirection_fd(char *str, int *fd)
         file_name[character_added + 1] = '\0';
         character_added += 1;
     }
-    printf("File_name : %s\n", file_name);
-    *fd = open(file_name, O_RDWR | O_CREAT, S_IROTH | S_IWOTH);
-    printf("Bijour : %i\n", *fd);
+    if (file_name[my_strlen(file_name) - 1] == '\n')
+        file_name[my_strlen(file_name) - 1] = '\0';
+    *fd = open(file_name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     free(file_name);
 }
 
