@@ -93,11 +93,9 @@ int parse_double_left_redirection(char *str)
         return FAILURE;
     if (str[my_strlen(str) - 1] == '\n')
         str[my_strlen(str) - 1] = '\0';
-    printf("Walla : %s\n", str);
     for (size_t i = 0; str[i] != '\0'; i += 1) {
         if (check_single_character(str, i) == FAILURE)
             return FAILURE;
     }
-    printf("Bijour\n");
     return SUCCESS;
 }
