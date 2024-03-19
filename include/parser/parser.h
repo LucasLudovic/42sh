@@ -11,6 +11,7 @@
 char **parse_semicolon(char *str);
 char **parse_double_left_redirection(char *str);
 char **parse_double_right_redirection(char *str, int *fd);
+char **parse_single_right_redirection(char *str, int *fd);
 int check_ambiguity(char **str);
 
 #endif

@@ -115,6 +115,8 @@ int check_redirection(char **every_arguments, char *arguments, int *fd)
             parse_double_left_redirection(arguments);
         if (arguments[j] == '>' && arguments[j + 1] == '>')
             parse_double_right_redirection(arguments, fd);
+        if (arguments[j] == '>' && arguments[j + 1] != '>')
+            parse_single_right_redirection(arguments, fd);
     }
     return SUCCESS;
 }
