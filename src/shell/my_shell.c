@@ -113,8 +113,10 @@ int check_redirection(char ***pipes_values, char **every_arguments,
         return FAILURE;
     for (size_t j = 0; arguments[j] != '\0'; j += 1) {
         if (arguments[j] == '|' && arguments[j + 1] != '|') {
-            parse_pipes(pipes_values, arguments);
-            return SUCCESS;
+            if (pipes_values != NULL) {
+                parse_pipes(pipes_values, arguments);
+                return SUCCESS;
+            }
         }
         if (arguments[j] == '<' && arguments[j + 1] == '<')
             parse_double_left_redirection(&arguments[j]);
@@ -166,6 +168,8 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
                     close(save_stdout);
                 }
             }
+            free(pipes_values);
+            pipes_values = NULL;
         }
     }
 }
