@@ -111,6 +111,8 @@ int check_redirection(char **every_arguments, char *arguments, int *fd)
     if (arguments == NULL || fd == NULL)
         return FAILURE;
     for (size_t j = 0; arguments[j] != '\0'; j += 1) {
+        if (arguments[j] == '|' && arguments[j + 1] != '|')
+            parse_pipes(arguments);
         if (arguments[j] == '<' && arguments[j + 1] == '<')
             parse_double_left_redirection(&arguments[j]);
         if (arguments[j] == '>' && arguments[j + 1] == '>')
