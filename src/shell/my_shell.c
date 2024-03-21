@@ -139,10 +139,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
         if (check_redirection(&pipes_values, arguments, arguments[i], &output_fd) == FAILURE)
             return;
         if (pipes_values == NULL) {
-            pipes_values = &arguments[i];
-        }
-        for (size_t j = 0; pipes_values[j] != NULL; j += 1) {
-            split_arguments = my_str_to_word_array(pipes_values[j]);
+            split_arguments = my_str_to_word_array(arguments[i]);
             if (output_fd != STDOUT_FILENO) {
                 save_stdout = dup(STDOUT_FILENO);
                 dup2(output_fd, STDOUT_FILENO);
@@ -153,7 +150,22 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
                 dup2(save_stdout, STDOUT_FILENO);
                 close(output_fd);
                 close(save_stdout);
-        }
+            }
+        } else {
+            for (size_t j = 0; pipes_values[j] != NULL; j += 1) {
+                split_arguments = my_str_to_word_array(pipes_values[j]);
+                if (output_fd != STDOUT_FILENO) {
+                    save_stdout = dup(STDOUT_FILENO);
+                    dup2(output_fd, STDOUT_FILENO);
+                }
+                execute_action(my_shell, builtin_array, split_arguments);
+                destroy_user_arguments(split_arguments);
+                if (output_fd != STDOUT_FILENO) {
+                    dup2(save_stdout, STDOUT_FILENO);
+                    close(output_fd);
+                    close(save_stdout);
+                }
+            }
         }
     }
 }
