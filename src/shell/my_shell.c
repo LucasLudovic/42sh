@@ -102,7 +102,8 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
 }
 
 static
-int check_redirection(char **every_arguments, char *arguments, int *fd)
+int check_redirection(char ***pipes_values, char **every_arguments,
+    char *arguments, int *fd)
 {
     if (every_arguments == NULL)
         return FAILURE;
@@ -111,8 +112,10 @@ int check_redirection(char **every_arguments, char *arguments, int *fd)
     if (arguments == NULL || fd == NULL)
         return FAILURE;
     for (size_t j = 0; arguments[j] != '\0'; j += 1) {
-        if (arguments[j] == '|' && arguments[j + 1] != '|')
-            parse_pipes(arguments);
+        if (arguments[j] == '|' && arguments[j + 1] != '|') {
+            parse_pipes(pipes_values, arguments);
+            return SUCCESS;
+        }
         if (arguments[j] == '<' && arguments[j + 1] == '<')
             parse_double_left_redirection(&arguments[j]);
         if (arguments[j] == '>' && arguments[j + 1] == '>')
@@ -128,23 +131,29 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     builtin_t *builtin_array)
 {
     char **split_arguments = NULL;
+    char **pipes_values = NULL;
     int output_fd = STDOUT_FILENO;
     int save_stdout = 0;
 
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
+        if (check_redirection(&pipes_values, arguments, arguments[i], &output_fd) == FAILURE)
             return;
-        split_arguments = my_str_to_word_array(arguments[i]);
-        if (output_fd != STDOUT_FILENO) {
-            save_stdout = dup(STDOUT_FILENO);
-            dup2(output_fd, STDOUT_FILENO);
+        if (pipes_values == NULL) {
+            pipes_values = &arguments[i];
         }
-        execute_action(my_shell, builtin_array, split_arguments);
-        destroy_user_arguments(split_arguments);
-        if (output_fd != STDOUT_FILENO) {
-            dup2(save_stdout, STDOUT_FILENO);
-            close(output_fd);
-            close(save_stdout);
+        for (size_t j = 0; pipes_values[j] != NULL; j += 1) {
+            split_arguments = my_str_to_word_array(pipes_values[j]);
+            if (output_fd != STDOUT_FILENO) {
+                save_stdout = dup(STDOUT_FILENO);
+                dup2(output_fd, STDOUT_FILENO);
+            }
+            execute_action(my_shell, builtin_array, split_arguments);
+            destroy_user_arguments(split_arguments);
+            if (output_fd != STDOUT_FILENO) {
+                dup2(save_stdout, STDOUT_FILENO);
+                close(output_fd);
+                close(save_stdout);
+        }
         }
     }
 }
