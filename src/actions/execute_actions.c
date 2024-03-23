@@ -5,7 +5,6 @@
 ** Execute the actions for the minishell project
 */
 
-#include <iso646.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <dirent.h>
@@ -16,6 +15,7 @@
 #include "dependencies/environment.h"
 #include "builtin/builtin.h"
 #include "builtin/alias.h"
+#include "parser/parser.h"
 #include "my_macros.h"
 #include "my.h"
 
@@ -116,7 +116,7 @@ void check_absolute_path(shell_t *shell, char **arguments, char *binary_name)
 }
 
 static
-int execute_from_path(shell_t *shell, UNUSED char *binary_name,
+int execute_from_path(shell_t *shell, char *binary_name,
     char **arguments)
 {
     char *binary_absolute_path = NULL;
@@ -161,4 +161,13 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
         return SUCCESS;
     return (shell->exit_status == 1) ?
         SUCCESS : execute_from_path(shell, binary_name, arguments);
+}
+
+int execute_pipe(shell_t *shell, builtin_t *builtin_array, pipes_splits_t *pipes_arguments)
+{
+    if (pipes_arguments == NULL)
+        return shell->exit_status;
+    execute_pipe(shell, builtin_array, pipes_arguments->next);
+    execute_action(shell, builtin_array, pipes_arguments->arguments);
+    return shell->exit_status;
 }

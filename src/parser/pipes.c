@@ -9,58 +9,44 @@
 #include <unistd.h>
 #include "actions/execute_actions.h"
 #include "builtin/builtin.h"
+#include "parser/parser.h"
 #include "my.h"
 #include "my_macros.h"
 #include "my_alloc.h"
 
 static
-char **split_pipes(char ***split_str, char *str)
+void split_arguments(pipes_splits_t *pipes_split, char **arguments)
 {
-    int nb_quotes = 0;
-    int previous_position = 0;
-    int nb_str = 1;
-
-    for (size_t i = 0; str[i] != '\0'; i += 1) {
-        if (str[i] == '"')
-            nb_quotes += 1;
-        if (str[i] == '|' && nb_quotes % 2 == 0) {
-            *split_str = my_realloc(*split_str,
-                sizeof(char *) * (nb_str + 2), sizeof(char *) * nb_str);
-            (*split_str)[nb_str - 1][i - previous_position] = '\0';
-            (*split_str)[nb_str] = my_strdup(&(str[i + 1]));
-            (*split_str)[nb_str + 1] = NULL;
-            previous_position = i + 1;
-            nb_str += 1;
+    if (pipes_split == NULL || arguments == NULL)
+        return;
+    for (size_t i = 0; arguments[i] != NULL; i += 1) {
+        if (my_strcmp(arguments[i], "|") == 0) {
+            free(arguments[i]);
+            arguments[i] = NULL;
+            if (arguments[i + 1] != NULL) {
+                pipes_split->next = malloc(sizeof(pipes_splits_t));
+                pipes_split->next->arguments = &(arguments[i + 1]);
+                pipes_split->next->next = NULL;
+                pipes_split->path = NULL;
+                pipes_split = pipes_split->next;
+            }
         }
     }
-    return *split_str;
 }
 
-char **parse_pipes(char ***split_str, char *str)
+pipes_splits_t *parse_pipes(char **arguments)
 {
-    int nb_str = 1;
+    pipes_splits_t *pipes_split = NULL;
 
-    if (str == NULL || split_str == NULL)
+    if (arguments == NULL)
         return NULL;
-    *split_str = malloc(sizeof(char *) * (nb_str + 1));
-    if (*split_str == NULL)
+    pipes_split = malloc(sizeof(pipes_splits_t));
+    if (pipes_split == NULL)
         return NULL;
-    (*split_str)[0] = my_strdup(str);
-    (*split_str)[1] = NULL;
-    *split_str = split_pipes(split_str, str);
-    return *split_str;
+    pipes_split->arguments = arguments;
+    pipes_split->next = NULL;
+    pipes_split->path = NULL;
+    split_arguments(pipes_split, arguments);
+    return pipes_split;
 }
 
-char **parse_pipe(char *str)
-{
-    char **pipes_array = NULL;
-    int descriptor[2] = { 0 };
-
-    if (str == NULL)
-        return NULL;
-    if (pipe(descriptor) != 0) {
-        display_error("Unable to pipe\n");
-        return NULL;
-    }
-    return pipes_array;
-}
