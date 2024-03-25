@@ -185,6 +185,7 @@ int execute_pipe(shell_t *shell, builtin_t *builtin_array,
         dup2(descriptor[1], STDOUT_FILENO);
         close(descriptor[1]);
         execute_action(shell, builtin_array, pipes_arguments->arguments);
+        exit(SUCCESS);
     } else {
         close(descriptor[1]);
         dup2(descriptor[0], STDIN_FILENO);
