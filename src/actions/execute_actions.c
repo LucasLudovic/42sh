@@ -170,6 +170,8 @@ int execute_pipe(shell_t *shell, builtin_t *builtin_array,
     int status = SUCCESS;
     pid_t current_pid = -1;
     int descriptor[2] = { 0 };
+    int save_stdout = dup(STDOUT_FILENO);
+    int save_stdin = dup(STDIN_FILENO);
 
     if (pipes_arguments == NULL)
         return shell->exit_status;
@@ -191,7 +193,11 @@ int execute_pipe(shell_t *shell, builtin_t *builtin_array,
         dup2(descriptor[0], STDIN_FILENO);
         close(descriptor[0]);
         execute_pipe(shell, builtin_array, pipes_arguments->next);
-        wait(&status);
+        waitpid(-1, &status, 0);
     }
+    dup2(save_stdout, STDOUT_FILENO);
+    close(save_stdout);
+    dup2(save_stdin, STDIN_FILENO);
+    close(save_stdin);
     return shell->exit_status;
 }
