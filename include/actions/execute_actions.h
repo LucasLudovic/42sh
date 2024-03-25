@@ -13,6 +13,7 @@
 
 int execute_action(shell_t *shell, builtin_t *builtin_array,
     char **arguments);
-int execute_pipe(shell_t *shell, builtin_t *builtin_array, pipes_splits_t *pipes_arguments);
+int execute_pipe(shell_t *shell, builtin_t *builtin_array,
+    pipes_splits_t *pipes_arguments);
 
 #endif

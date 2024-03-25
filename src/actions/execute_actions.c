@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <threads.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include "my_alloc.h"
@@ -163,11 +164,33 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
         SUCCESS : execute_from_path(shell, binary_name, arguments);
 }
 
-int execute_pipe(shell_t *shell, builtin_t *builtin_array, pipes_splits_t *pipes_arguments)
+int execute_pipe(shell_t *shell, builtin_t *builtin_array,
+    pipes_splits_t *pipes_arguments)
 {
+    int status = SUCCESS;
+    pid_t current_pid = -1;
+    int descriptor[2] = { 0 };
+
     if (pipes_arguments == NULL)
         return shell->exit_status;
-    execute_pipe(shell, builtin_array, pipes_arguments->next);
-    execute_action(shell, builtin_array, pipes_arguments->arguments);
+    if (pipes_arguments->next == NULL)
+        return execute_action(shell, builtin_array, pipes_arguments->arguments);
+    if (pipe(descriptor) < 0)
+        return display_error("Unable to pipe\n");
+    current_pid = fork();
+    if (current_pid < 0)
+        return display_error("Unable to fork with pipes\n");
+    if (current_pid == 0) {
+        close(descriptor[0]);
+        dup2(descriptor[1], STDOUT_FILENO);
+        close(descriptor[1]);
+        execute_action(shell, builtin_array, pipes_arguments->arguments);
+    } else {
+        close(descriptor[1]);
+        dup2(descriptor[0], STDIN_FILENO);
+        close(descriptor[0]);
+        execute_pipe(shell, builtin_array, pipes_arguments->next);
+        wait(&status);
+    }
     return shell->exit_status;
 }

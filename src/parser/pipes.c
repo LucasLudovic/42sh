@@ -15,6 +15,22 @@
 #include "my_alloc.h"
 
 static
+void alloc_single_node(pipes_splits_t **pipes_split, char **arguments, int i)
+{
+    if (pipes_split == NULL || *pipes_split == NULL)
+        return;
+    if (arguments[i + 1] != NULL) {
+        (*pipes_split)->next = malloc(sizeof(pipes_splits_t));
+        if ((*pipes_split)->next == NULL)
+            return;
+        (*pipes_split)->next->arguments = &(arguments[i + 1]);
+        (*pipes_split)->next->next = NULL;
+        (*pipes_split)->path = NULL;
+        (*pipes_split) = (*pipes_split)->next;
+    }
+}
+
+static
 void split_arguments(pipes_splits_t *pipes_split, char **arguments)
 {
     if (pipes_split == NULL || arguments == NULL)
@@ -23,13 +39,7 @@ void split_arguments(pipes_splits_t *pipes_split, char **arguments)
         if (my_strcmp(arguments[i], "|") == 0) {
             free(arguments[i]);
             arguments[i] = NULL;
-            if (arguments[i + 1] != NULL) {
-                pipes_split->next = malloc(sizeof(pipes_splits_t));
-                pipes_split->next->arguments = &(arguments[i + 1]);
-                pipes_split->next->next = NULL;
-                pipes_split->path = NULL;
-                pipes_split = pipes_split->next;
-            }
+            alloc_single_node(&pipes_split, arguments, i);
         }
     }
 }
@@ -38,7 +48,7 @@ pipes_splits_t *parse_pipes(char **arguments)
 {
     pipes_splits_t *pipes_split = NULL;
 
-    if (arguments == NULL)
+    if (arguments == NULL || arguments[0] == NULL)
         return NULL;
     pipes_split = malloc(sizeof(pipes_splits_t));
     if (pipes_split == NULL)
@@ -49,4 +59,3 @@ pipes_splits_t *parse_pipes(char **arguments)
     split_arguments(pipes_split, arguments);
     return pipes_split;
 }
-
