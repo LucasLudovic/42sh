@@ -194,7 +194,7 @@ int execute_pipe(shell_t *shell, builtin_t *builtin_array,
         close(descriptor[0]);
         execute_pipe(shell, builtin_array, pipes_arguments->next);
         waitpid(-1, &status, 0);
-    }
+   }
     dup2(save_stdout, STDOUT_FILENO);
     close(save_stdout);
     dup2(save_stdin, STDIN_FILENO);
