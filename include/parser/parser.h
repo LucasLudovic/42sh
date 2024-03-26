@@ -7,6 +7,8 @@
 
 #ifndef PARSER_H_
     #define PARSER_H_
+    #include "shell/my_shell.h"
+    #include "builtin/builtin.h"
 
 typedef struct pipes_split_s {
     char **arguments;
@@ -20,5 +22,7 @@ char **parse_double_right_redirection(char *str, int *fd);
 char **parse_single_right_redirection(char *str, int *fd);
 pipes_splits_t *parse_pipes(char **arguments);
 int check_ambiguity(char **str);
+int execute_pipe(shell_t *shell, builtin_t *builtin_array,
+    pipes_splits_t *pipes_arguments);
 
 #endif
