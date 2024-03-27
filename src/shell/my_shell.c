@@ -136,6 +136,20 @@ void retrieve_stdout(int *output_fd, int *save_stdout)
 }
 
 static
+void destroy_pipes_split(pipes_splits_t *pipes_split)
+{
+    pipes_splits_t *tmp = NULL;
+
+    if (pipes_split == NULL)
+        return;
+    while (pipes_split != NULL) {
+        tmp = pipes_split;
+        pipes_split = pipes_split->next;
+        free(tmp);
+    }
+}
+
+static
 void execute_single_instruction(char **arguments, shell_t *my_shell,
     builtin_t *builtin_array)
 {
@@ -156,6 +170,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
         execute_pipe(my_shell, builtin_array, pipes_split);
         destroy_user_arguments(split_arguments);
         retrieve_stdout(&output_fd, &save_stdout);
+        destroy_pipes_split(pipes_split);
     }
 }
 
