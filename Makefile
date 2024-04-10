@@ -27,7 +27,7 @@ SRC	+=	src/actions/execute_actions.c
 
 OBJ	=	$(SRC:.c=.o)
 
-NAME	=	mysh
+NAME	=	42sh
 
 CC	=	gcc
 
