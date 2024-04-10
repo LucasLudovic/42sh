@@ -17,7 +17,14 @@ SRC	+=	../src/dependencies/get_environment.c
 SRC	+=	../src/dependencies/which.c
 SRC	+=	../src/shell/my_shell.c
 SRC	+=	../src/shell/prompt.c
-SRC	+=	actions/tests_execute_actions.c
+SRC	+=	../src/parser/check_ambiguity.c
+SRC	+=	../src/parser/double_left_redirection.c
+SRC	+=	../src/parser/double_right_redirection.c
+SRC	+=	../src/parser/single_left_redirection.c
+SRC	+=	../src/parser/single_right_redirection.c
+SRC	+=	../src/parser/pipes.c
+SRC	+=	../src/parser/semicolon.c
+SRC	+=	fonctionnal_tests.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -26,7 +33,7 @@ NAME	=	unit_tests
 CFLAGS	=	-W -Wall -Wextra
 CFLAGS	+=	-I ../include/
 CFLAGS	+=	--coverage -lcriterion
-CFLAGS	+=	-L ../lib/my -lmy
+CFLAGS	+=	-L ../lib -lmy -lmy_alloc
 
 CC	=	gcc -g3
 
