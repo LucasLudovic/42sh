@@ -1,3 +1,9 @@
+/*
+** EPITECH PROJECT, 2023
+** 42sh
+** File description:
+** test header for 42sh
+*/
 #ifndef MY_H
     #define MY_H
 
