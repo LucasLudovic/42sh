@@ -7,8 +7,8 @@ on:
     branches-ignore: [ga-ignore-*]
 
 env:
-  MIRROR_URL:  git@github.com:EpitechPromo2028/B-DOP-200-BDX-2-1-chocolatine-lucas.ludovic.git
-  URL: EpitechPromo2028/B-DOP-200-BDX-2-1-chocolatine-lucas.ludovic
+  MIRROR_URL:  git@github.com:EpitechPromo2028/B-PSU-200-BDX-2-1-42sh-tilio.huart.git
+  URL: EpitechPromo2028/B-PSU-200-BDX-2-1-42sh-tilio.huart.git
   EXECUTABLES: 42sh
 
 jobs:
