@@ -52,7 +52,7 @@ clean:
 fclean:	clean
 	@make fclean -C lib/my
 	@make fclean -C lib/my_alloc
-	@make fclean -C tests/
+	@make fclean -C tests
 	@rm -f $(NAME)
 
 re: fclean all
