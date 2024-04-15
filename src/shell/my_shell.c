@@ -19,6 +19,7 @@
 #include "builtin/unsetenv.h"
 #include "builtin/exit.h"
 #include "builtin/cd.h"
+#include "builtin/alias.h"
 #include "parser/parser.h"
 #include "actions/execute_actions.h"
 #include "shell/my_shell.h"
@@ -76,6 +77,8 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->function[3] = &exit_shell;
     builtin_array->name[4] = my_strdup("cd");
     builtin_array->function[4] = &change_directory;
+    builtin_array->name[5] = my_strdup("alias");
+    builtin_array->function[5] = &replace_alias;
     if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
         builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
         builtin_array->name[4] == NULL)

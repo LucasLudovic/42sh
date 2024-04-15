@@ -43,6 +43,7 @@ void display_alias(alias_t *alias)
         if (alias->alias == NULL || alias->initial_name == NULL)
             break;
         printf("%s='%s'\n", alias->alias, alias->initial_name);
+        alias = alias->next;
     }
 }
 
@@ -80,16 +81,14 @@ int get_initial_name(alias_t *alias, char *argument)
     for (size_t i = 0; argument[i] != '\0'; i += 1){
         if (argument[i] == '=') {
             end_initial_name = i;
-            alias->alias = my_strdup(&argument[i + 1]);
+            alias->initial_name = my_strdup(&argument[i + 1]);
             break;
         }
     }
     if (end_initial_name == 0)
         return display_error("Alias wrong format\n");
-    if (alias->alias == NULL) {
-        display_error("Unable to alloc memory to alias name\n");
-        return FAILURE;
-    }
+    if (alias->initial_name == NULL)
+        return display_error("Unable to alloc memory to alias name\n");
     return SUCCESS;
 }
 
@@ -103,7 +102,9 @@ int add_new_alias(alias_t *alias, char *argument)
     alias->next = malloc(sizeof(alias_t));
     if (alias->next == NULL)
         return display_error("Unable to alloc memory to new alias\n");
-    alias->next = NULL;
+    alias->next->next = NULL;
+    alias->next->alias = NULL;
+    alias->next->initial_name = NULL;
     if (get_alias(alias->next, argument) == FAILURE
         || get_initial_name(alias->next, argument) == FAILURE)
         return FAILURE;
@@ -121,7 +122,7 @@ int replace_alias(shell_t *shell, char **arguments, UNUSED int nb_arguments)
     if (shell->alias == NULL) {
         shell->alias = malloc(sizeof(alias_t));
         if (shell->alias == NULL)
-            return FAILURE;
+            return display_error("Unable to initialize alias");
         if (get_alias(shell->alias, arguments[1]) == FAILURE
             || get_initial_name(shell->alias, arguments[1]) == FAILURE)
             return FAILURE;

@@ -151,7 +151,7 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     binary_name = arguments[0];
     while (arguments[nb_arguments] != NULL)
         nb_arguments += 1;
-    for (int i = 0; i < 5; i += 1) {
+    for (int i = 0; i < NB_BUILTIN; i += 1) {
         if (my_strcmp(builtin_array->name[i], binary_name) == 0) {
             builtin_array->function[i](shell, arguments,
                 nb_arguments);
