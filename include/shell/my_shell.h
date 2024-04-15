@@ -8,7 +8,12 @@
 #ifndef MY_SHELL_H_
     #define MY_SHELL_H_
     #include "dependencies/environment.h"
-    #include "builtin/alias.h"
+
+typedef struct alias_s {
+    char *initial_name;
+    char *alias;
+    struct alias_s *next;
+} alias_t;
 
 typedef struct shell_s {
     int alive;

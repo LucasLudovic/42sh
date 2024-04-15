@@ -6,6 +6,9 @@
 */
 
 #include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "builtin/alias.h"
 #include "my.h"
 #include "my_macros.h"
 #include "shell/my_shell.h"
@@ -26,5 +29,105 @@ char *check_alias(alias_t *alias, char *name)
 
 int change_name(UNUSED char **arguments)
 {
+    return SUCCESS;
+}
+
+static
+void display_alias(alias_t *alias)
+{
+    if (alias == NULL) {
+        printf("No alias to display\n");
+        return;
+    }
+    while (alias != NULL) {
+        if (alias->alias == NULL || alias->initial_name == NULL)
+            break;
+        printf("%s='%s'\n", alias->alias, alias->initial_name);
+    }
+}
+
+static
+int get_alias(alias_t *alias, char *argument)
+{
+    int end_alias_name = 0;
+
+    if (alias == NULL)
+        return FAILURE;
+    for (size_t i = 0; argument[i] != '\0'; i += 1){
+        if (argument[i] == '=') {
+            end_alias_name = i;
+            alias->alias = my_strdup(argument);
+            break;
+        }
+    }
+    if (end_alias_name == 0)
+        return display_error("Alias wrong format\n");
+    if (alias->alias == NULL) {
+        display_error("Unable to alloc memory to alias initial name\n");
+        return FAILURE;
+    }
+    alias->alias[end_alias_name] = '\0';
+    return SUCCESS;
+}
+
+static
+int get_initial_name(alias_t *alias, char *argument)
+{
+    int end_initial_name = 0;
+
+    if (alias == NULL)
+        return FAILURE;
+    for (size_t i = 0; argument[i] != '\0'; i += 1){
+        if (argument[i] == '=') {
+            end_initial_name = i;
+            alias->alias = my_strdup(&argument[i + 1]);
+            break;
+        }
+    }
+    if (end_initial_name == 0)
+        return display_error("Alias wrong format\n");
+    if (alias->alias == NULL) {
+        display_error("Unable to alloc memory to alias name\n");
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+static
+int add_new_alias(alias_t *alias, char *argument)
+{
+    if (alias == NULL || argument == NULL)
+        return FAILURE;
+    while (alias->next != NULL)
+        alias = alias->next;
+    alias->next = malloc(sizeof(alias_t));
+    if (alias->next == NULL)
+        return display_error("Unable to alloc memory to new alias\n");
+    alias->next = NULL;
+    if (get_alias(alias->next, argument) == FAILURE
+        || get_initial_name(alias->next, argument) == FAILURE)
+        return FAILURE;
+    return SUCCESS;
+}
+
+int replace_alias(shell_t *shell, char **arguments, UNUSED int nb_arguments)
+{
+    if (shell == NULL || arguments == NULL)
+        return FAILURE;
+    if (arguments[0] != NULL && arguments[1] == NULL) {
+        display_alias(shell->alias);
+        return SUCCESS;
+    }
+    if (shell->alias == NULL) {
+        shell->alias = malloc(sizeof(alias_t));
+        if (shell->alias == NULL)
+            return FAILURE;
+        if (get_alias(shell->alias, arguments[1]) == FAILURE
+            || get_initial_name(shell->alias, arguments[1]) == FAILURE)
+            return FAILURE;
+        shell->alias->next = NULL;
+        return SUCCESS;
+    }
+    add_new_alias(shell->alias, arguments[1]);
     return SUCCESS;
 }
