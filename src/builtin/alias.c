@@ -13,25 +13,6 @@
 #include "my_macros.h"
 #include "shell/my_shell.h"
 
-char *check_alias(alias_t *alias, char *name)
-{
-    if (alias == NULL || name == NULL)
-        return NULL;
-    while (alias != NULL) {
-        if (alias->alias == NULL || alias->initial_name == NULL)
-            return NULL;
-        if (my_strcmp(alias->alias, name) == 0)
-            return alias->initial_name;
-        alias = alias->next;
-    }
-    return name;
-}
-
-int change_name(UNUSED char **arguments)
-{
-    return SUCCESS;
-}
-
 static
 void display_alias(alias_t *alias)
 {
@@ -111,10 +92,25 @@ int add_new_alias(alias_t *alias, char *argument)
     return SUCCESS;
 }
 
-int replace_alias(shell_t *shell, char **arguments, UNUSED int nb_arguments)
+alias_t *destroy_alias(alias_t *alias)
+{
+    if (alias == NULL)
+        return NULL;
+    destroy_alias(alias->next);
+    if (alias->initial_name != NULL)
+        free(alias->initial_name);
+    if (alias->alias != NULL)
+        free(alias->alias);
+    free(alias);
+    return NULL;
+}
+
+int replace_alias(shell_t *shell, char **arguments, int nb_arguments)
 {
     if (shell == NULL || arguments == NULL)
         return FAILURE;
+    if (nb_arguments > 2)
+        return display_error("Wrong number of arguments\n");
     if (arguments[0] != NULL && arguments[1] == NULL) {
         display_alias(shell->alias);
         return SUCCESS;

@@ -10,8 +10,7 @@
     #include "my_macros.h"
     #include "shell/my_shell.h"
 
-int change_name(char **arguments);
-char *check_alias(alias_t *alias, char *arguments);
 int replace_alias(shell_t *shell, char **arguments, UNUSED int nb_arguments);
+alias_t *destroy_alias(alias_t *alias);
 
 #endif

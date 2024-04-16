@@ -31,6 +31,8 @@ static
 void destroy_end(shell_t *shell, environment_t **shell_environment,
     builtin_t *builtin_array)
 {
+    if (shell != NULL)
+        shell->alias = destroy_alias(shell->alias);
     if (shell != NULL && shell->previous_path != NULL)
         free(shell->previous_path);
     destroy_environment_list(shell_environment);
