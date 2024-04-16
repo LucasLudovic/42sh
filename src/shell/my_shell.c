@@ -163,6 +163,8 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     int output_fd = STDOUT_FILENO;
     int save_stdout = 0;
 
+    if (arguments == NULL || arguments[0] == NULL)
+        return;
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
         if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
             return;

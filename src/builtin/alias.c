@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "builtin/alias.h"
 #include "my.h"
 #include "my_macros.h"
@@ -74,12 +75,43 @@ int get_initial_name(alias_t *alias, char *argument)
 }
 
 static
+int check_alias_already_present(alias_t *alias, char *argument)
+{
+    char *new_alias = my_strdup(strtok(argument, "="));
+    char *new_initial_name = my_strdup(strtok(NULL, "="));
+
+    if (argument != NULL)
+        free(argument);
+    if (new_alias == NULL || new_initial_name == NULL) {
+        if (new_alias != NULL)
+            free(new_alias);
+        return FALSE;
+    }
+    if (strcmp(alias->alias, new_alias) == 0) {
+        if (alias->initial_name != NULL)
+            free(alias->initial_name);
+        alias->initial_name = new_initial_name;
+        if (new_alias != NULL)
+            free(new_alias);
+        return TRUE;
+    }
+    free(new_alias);
+    free(new_initial_name);
+    return FALSE;
+}
+
+static
 int add_new_alias(alias_t *alias, char *argument)
 {
     if (alias == NULL || argument == NULL)
         return FAILURE;
-    while (alias->next != NULL)
+    while (alias->next != NULL) {
+        if (check_alias_already_present(alias, strdup(argument)) == TRUE)
+            return SUCCESS;
         alias = alias->next;
+    }
+    if (check_alias_already_present(alias, strdup(argument)) == TRUE)
+        return SUCCESS;
     alias->next = malloc(sizeof(alias_t));
     if (alias->next == NULL)
         return display_error("Unable to alloc memory to new alias\n");
