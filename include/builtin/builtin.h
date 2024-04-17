@@ -14,4 +14,6 @@ typedef struct builtin_s {
     int (*function[6])(shell_t *, char **, int);
 } builtin_t;
 
+void empty_buffer(void);
+
 #endif
