@@ -163,7 +163,7 @@ int use_alias(shell_t *shell, char **argument)
     tmp = *argument;
     while (alias != NULL) {
         if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
-            *argument = replace_argument_alias(alias, &(*argument)[my_strlen(alias->alias)- 1]);
+            *argument = replace_argument_alias(alias, &(*argument)[my_strlen(alias->alias)]);
             if (tmp != NULL)
                 free(tmp);
             return SUCCESS;

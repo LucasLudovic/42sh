@@ -166,6 +166,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     if (arguments == NULL || arguments[0] == NULL)
         return;
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
+        use_alias(my_shell, &arguments[i]);
         if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
             return;
         split_arguments = my_str_to_word_array(arguments[i]);
