@@ -50,16 +50,6 @@ void display_simple_prompt(shell_t *shell)
 }
 
 static
-void display_directory(char *current_directory, char *home_directory)
-{
-    if (my_strcmp(current_directory, home_directory) == 0)
-        display_string_colored("~", "cyan");
-    else
-        display_string_colored(current_directory, "cyan");
-    my_putchar(' ');
-}
-
-static
 void display_branch(void)
 {
     FILE *fp = NULL;
@@ -78,6 +68,17 @@ void display_branch(void)
         pclose(fp);
         free(branch);
     }
+}
+
+static
+void display_directory(char *current_directory, char *home_directory)
+{
+    if (my_strcmp(current_directory, home_directory) == 0)
+        display_string_colored("~", "cyan");
+    else
+        display_string_colored(current_directory, "cyan");
+    my_putchar(' ');
+    display_branch();
 }
 
 void print_prompt(shell_t *shell)
@@ -101,6 +102,5 @@ void print_prompt(shell_t *shell)
     display_directory(current_directory, home_directory);
     current_directory -= movement;
     free(current_directory);
-    display_branch();
     shell->environment = head;
 }
