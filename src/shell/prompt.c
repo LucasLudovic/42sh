@@ -59,6 +59,27 @@ void display_directory(char *current_directory, char *home_directory)
     my_putchar(' ');
 }
 
+static
+void display_branch(void)
+{
+    FILE *fp = NULL;
+    char name[128];
+    char *branch = NULL;
+    int repo = system("git rev-parse --is-inside-work-tree > /dev/null 2>&1");
+
+    if (repo == SUCCESS) {
+        fp = popen("git rev-parse --abbrev-ref HEAD", "r");
+        fgets(name, 128, fp);
+        branch = my_strdup(name);
+        branch[my_strlen(name) - 1] = '\0';
+        display_string_colored("(", "blue");
+        display_string_colored(branch, "purple");
+        display_string_colored(") ", "blue");
+        pclose(fp);
+        free(branch);
+    }
+}
+
 void print_prompt(shell_t *shell)
 {
     char *current_directory = NULL;
@@ -80,5 +101,6 @@ void print_prompt(shell_t *shell)
     display_directory(current_directory, home_directory);
     current_directory -= movement;
     free(current_directory);
+    display_branch();
     shell->environment = head;
 }
