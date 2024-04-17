@@ -196,7 +196,7 @@ int my_shell(char **environment)
             print_prompt(&my_shell);
         arguments = get_user_arguments(&my_shell, arguments);
         if (arguments == NULL || arguments[0] == NULL)
-            continue;
+            break;
         execute_single_instruction(arguments, &my_shell, &builtin_array);
         destroy_user_arguments(arguments);
     }
