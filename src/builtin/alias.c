@@ -144,11 +144,25 @@ char *replace_argument_alias(alias_t *alias, char *argument)
 
     if (alias == NULL || argument == NULL)
         return NULL;
-    size_new_argument = my_strlen(alias->initial_name) + my_strlen(argument); 
+    size_new_argument = my_strlen(alias->initial_name);
+    size_new_argument += my_strlen(argument);
     new_argument = malloc(sizeof(char) * (size_new_argument + 1));
     my_strcpy(new_argument, alias->initial_name);
     my_strcat(new_argument, argument);
     return new_argument;
+}
+
+static
+int parse_single_alias(alias_t *alias, char **argument, char *tmp)
+{
+    if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
+        *argument = replace_argument_alias(alias,
+            &(*argument)[my_strlen(alias->alias)]);
+        if (tmp != NULL)
+            free(tmp);
+        return SUCCESS;
+    }
+    return FAILURE;
 }
 
 int use_alias(shell_t *shell, char **argument)
@@ -161,12 +175,7 @@ int use_alias(shell_t *shell, char **argument)
     alias = shell->alias;
     tmp = *argument;
     while (alias != NULL) {
-        if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
-            *argument = replace_argument_alias(alias, &(*argument)[my_strlen(alias->alias)]);
-            if (tmp != NULL)
-                free(tmp);
-            return SUCCESS;
-        }
+        parse_single_alias(alias, argument, tmp);
         alias = alias->next;
     }
     return FAILURE;
