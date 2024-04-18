@@ -80,13 +80,12 @@ int check_alias_already_present(alias_t *alias, char *argument)
     char *new_alias = my_strdup(strtok(argument, "="));
     char *new_initial_name = my_strdup(strtok(NULL, "="));
 
-    if (argument != NULL)
-        free(argument);
     if (new_alias == NULL || new_initial_name == NULL) {
         if (new_alias != NULL)
             free(new_alias);
         return FALSE;
     }
+    free(argument);
     if (strcmp(alias->alias, new_alias) == 0) {
         if (alias->initial_name != NULL)
             free(alias->initial_name);

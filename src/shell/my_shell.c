@@ -169,10 +169,8 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
         if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
             return;
         split_arguments = my_str_to_word_array(arguments[i]);
-        if (output_fd != STDOUT_FILENO) {
-            save_stdout = dup(STDOUT_FILENO);
-            dup2(output_fd, STDOUT_FILENO);
-        }
+        save_stdout = dup(STDOUT_FILENO);
+        dup2(output_fd, STDOUT_FILENO);
         pipes_split = parse_pipes(split_arguments);
         execute_pipe(my_shell, builtin_array, pipes_split);
         destroy_user_arguments(split_arguments);
