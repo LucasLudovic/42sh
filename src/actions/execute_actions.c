@@ -148,6 +148,7 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     if (shell == NULL || arguments == NULL || arguments[0] == NULL)
         return FAILURE;
     shell->exit_status = 0;
+    use_alias(shell, &arguments[0]);
     binary_name = arguments[0];
     while (arguments[nb_arguments] != NULL)
         nb_arguments += 1;

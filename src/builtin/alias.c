@@ -136,6 +136,42 @@ alias_t *destroy_alias(alias_t *alias)
     return NULL;
 }
 
+static
+char *replace_argument_alias(alias_t *alias, char *argument)
+{
+    char *new_argument = NULL;
+    int size_new_argument = 0;
+
+    if (alias == NULL || argument == NULL)
+        return NULL;
+    size_new_argument = my_strlen(alias->initial_name) + my_strlen(argument); 
+    new_argument = malloc(sizeof(char) * (size_new_argument + 1));
+    my_strcpy(new_argument, alias->initial_name);
+    my_strcat(new_argument, argument);
+    return new_argument;
+}
+
+int use_alias(shell_t *shell, char **argument)
+{
+    alias_t *alias = NULL;
+    char *tmp = NULL;
+
+    if (shell == NULL || shell->alias == NULL || argument == NULL)
+        return FAILURE;
+    alias = shell->alias;
+    tmp = *argument;
+    while (alias != NULL) {
+        if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
+            *argument = replace_argument_alias(alias, &(*argument)[my_strlen(alias->alias)]);
+            if (tmp != NULL)
+                free(tmp);
+            return SUCCESS;
+        }
+        alias = alias->next;
+    }
+    return FAILURE;
+}
+
 int replace_alias(shell_t *shell, char **arguments, int nb_arguments)
 {
     if (shell == NULL || arguments == NULL)
