@@ -80,13 +80,12 @@ int check_alias_already_present(alias_t *alias, char *argument)
     char *new_alias = my_strdup(strtok(argument, "="));
     char *new_initial_name = my_strdup(strtok(NULL, "="));
 
-    if (argument != NULL)
-        free(argument);
     if (new_alias == NULL || new_initial_name == NULL) {
         if (new_alias != NULL)
             free(new_alias);
         return FALSE;
     }
+    free(argument);
     if (strcmp(alias->alias, new_alias) == 0) {
         if (alias->initial_name != NULL)
             free(alias->initial_name);
@@ -135,6 +134,51 @@ alias_t *destroy_alias(alias_t *alias)
         free(alias->alias);
     free(alias);
     return NULL;
+}
+
+static
+char *replace_argument_alias(alias_t *alias, char *argument)
+{
+    char *new_argument = NULL;
+    int size_new_argument = 0;
+
+    if (alias == NULL || argument == NULL)
+        return NULL;
+    size_new_argument = my_strlen(alias->initial_name);
+    size_new_argument += my_strlen(argument);
+    new_argument = malloc(sizeof(char) * (size_new_argument + 1));
+    my_strcpy(new_argument, alias->initial_name);
+    my_strcat(new_argument, argument);
+    return new_argument;
+}
+
+static
+int parse_single_alias(alias_t *alias, char **argument, char *tmp)
+{
+    if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
+        *argument = replace_argument_alias(alias,
+            &(*argument)[my_strlen(alias->alias)]);
+        if (tmp != NULL)
+            free(tmp);
+        return SUCCESS;
+    }
+    return FAILURE;
+}
+
+int use_alias(shell_t *shell, char **argument)
+{
+    alias_t *alias = NULL;
+    char *tmp = NULL;
+
+    if (shell == NULL || shell->alias == NULL || argument == NULL)
+        return FAILURE;
+    alias = shell->alias;
+    tmp = *argument;
+    while (alias != NULL) {
+        parse_single_alias(alias, argument, tmp);
+        alias = alias->next;
+    }
+    return FAILURE;
 }
 
 int replace_alias(shell_t *shell, char **arguments, int nb_arguments)

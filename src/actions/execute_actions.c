@@ -140,6 +140,18 @@ int execute_from_path(shell_t *shell, char *binary_name,
     return status;
 }
 
+static
+int get_number_argument(char **arguments)
+{
+    int nb_arguments = 0;
+
+    if (arguments == NULL)
+        return 0;
+    while (arguments[nb_arguments] != NULL)
+        nb_arguments += 1;
+    return nb_arguments;
+}
+
 int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
 {
     int nb_arguments = 0;
@@ -148,9 +160,9 @@ int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
     if (shell == NULL || arguments == NULL || arguments[0] == NULL)
         return FAILURE;
     shell->exit_status = 0;
+    use_alias(shell, &arguments[0]);
     binary_name = arguments[0];
-    while (arguments[nb_arguments] != NULL)
-        nb_arguments += 1;
+    nb_arguments = get_number_argument(arguments);
     for (int i = 0; i < NB_BUILTIN; i += 1) {
         if (my_strcmp(builtin_array->name[i], binary_name) == 0) {
             builtin_array->function[i](shell, arguments,
