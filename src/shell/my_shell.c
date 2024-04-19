@@ -111,7 +111,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
 }
 
 static
-int check_redirection(char **every_arguments, char *arguments, int *fd)
+int check_redirection(char **every_arguments, char *arguments, int *fd, int *input_fd)
 {
     if (every_arguments == NULL)
         return FAILURE;
@@ -126,6 +126,8 @@ int check_redirection(char **every_arguments, char *arguments, int *fd)
             parse_double_right_redirection(arguments, fd);
         if (arguments[j] == '>' && arguments[j + 1] != '>')
             parse_single_right_redirection(arguments, fd);
+        if (arguments[j] == '<' && arguments[j + 1] != '<')
+            parse_single_left_redirection(arguments, input_fd);
     }
     return SUCCESS;
 }
@@ -137,6 +139,16 @@ void retrieve_stdout(int *output_fd, int *save_stdout)
         dup2(*save_stdout, STDOUT_FILENO);
         close(*output_fd);
         close(*save_stdout);
+    }
+}
+
+static
+void retrieve_stdin(int *input_fd, int *save_input)
+{
+    if (*input_fd != STDIN_FILENO) {
+        dup2(*save_input, STDIN_FILENO);
+        close(*input_fd);
+        close(*save_input);
     }
 }
 
@@ -161,22 +173,29 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     char **split_arguments = NULL;
     pipes_splits_t *pipes_split = NULL;
     int output_fd = STDOUT_FILENO;
+    int input_fd = STDIN_FILENO;
     int save_stdout = 0;
+    int save_input =  0;
 
     if (arguments == NULL || arguments[0] == NULL)
         return;
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        if (check_redirection(arguments, arguments[i], &output_fd) == FAILURE)
+        if (check_redirection(arguments, arguments[i], &output_fd, &input_fd) == FAILURE)
             return;
         split_arguments = my_str_to_word_array(arguments[i]);
         if (output_fd != STDOUT_FILENO) {
             save_stdout = dup(STDOUT_FILENO);
             dup2(output_fd, STDOUT_FILENO);
         }
+        if (input_fd != STDIN_FILENO) {
+            save_input = dup(STDIN_FILENO);
+            dup2(input_fd, STDIN_FILENO);
+        }
         pipes_split = parse_pipes(split_arguments);
         execute_pipe(my_shell, builtin_array, pipes_split);
         destroy_user_arguments(split_arguments);
         retrieve_stdout(&output_fd, &save_stdout);
+        retrieve_stdin(&input_fd, &save_input);
         destroy_pipes_split(pipes_split);
     }
 }

@@ -19,6 +19,7 @@ typedef struct pipes_split_s {
 char **parse_semicolon(char *str);
 char **parse_double_left_redirection(char *str);
 char **parse_double_right_redirection(char *str, int *fd);
+char **parse_single_left_redirection(char *str, int *fd);
 char **parse_single_right_redirection(char *str, int *fd);
 pipes_splits_t *parse_pipes(char **arguments);
 int check_ambiguity(char **str);

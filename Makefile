@@ -22,6 +22,7 @@ SRC	+=	src/parser/pipes.c
 SRC	+=	src/parser/double_left_redirection.c
 SRC	+=	src/parser/double_right_redirection.c
 SRC	+=	src/parser/single_right_redirection.c
+SRC	+=	src/parser/single_left_redirection.c
 SRC	+=	src/parser/check_ambiguity.c
 SRC	+=	src/actions/execute_actions.c
 
