@@ -23,8 +23,11 @@ SRC	+=	src/parser/double_left_redirection.c
 SRC	+=	src/parser/double_right_redirection.c
 SRC	+=	src/parser/single_right_redirection.c
 SRC	+=	src/parser/single_left_redirection.c
+SRC	+=	src/parser/retrieve_stdout.c
+SRC	+=	src/parser/retrieve_stdin.c
 SRC	+=	src/parser/check_ambiguity.c
 SRC	+=	src/actions/execute_actions.c
+SRC	+=	src/shell/pipes_handling.c
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -54,6 +57,8 @@ fclean:	clean
 	@make fclean -C lib/my
 	@make fclean -C lib/my_alloc
 	@make fclean -C tests
+	@	find .. -name *.gcno -delete
+	@	find .. -name *.gcda -delete
 	@rm -f $(NAME)
 
 re: fclean all
@@ -62,6 +67,7 @@ tests_run:	re
 	@make re -C tests/
 	@make clean -C tests/
 	@./unit_tests
+	@gcovr --exclude tests/ --exclude src/main.c
 	@gcovr --exclude tests/ --exclude src/main.c --branches
 
 .PHONY:	clean fclean re all tests_run
