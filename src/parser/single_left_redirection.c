@@ -31,8 +31,6 @@ static void open_file(int *fd, char *str)
 
     if (str == NULL || str[0] == '\0' || fd == NULL)
         return;
-    if (*fd == FAILURE)
-        return;
     for (size_t i = 0; str[i] != '\0'; i += 1) {
         if (str[i] == ' ' && file_name == NULL)
             continue;

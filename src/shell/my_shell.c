@@ -26,6 +26,9 @@
 #include "my_alloc.h"
 #include "my.h"
 #include "my_macros.h"
+#include "parser/retrieve_stdin.h"
+#include "parser/retrieve_stdout.h"
+#include "shell/pipes_handling.h"
 
 static
 void destroy_end(shell_t *shell, environment_t **shell_environment,
@@ -42,16 +45,6 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
         if (builtin_array->name[i] != NULL)
             free(builtin_array->name[i]);
     }
-}
-
-static
-void destroy_user_arguments(char **user_arguments)
-{
-    if (user_arguments == NULL)
-        return;
-    for (size_t i = 0; user_arguments[i] != NULL; i += 1)
-        free(user_arguments[i]);
-    free(user_arguments);
 }
 
 static
@@ -111,7 +104,8 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
 }
 
 static
-int check_redirection(char **every_arguments, char *arguments, int *fd, int *input_fd)
+int check_redirection(char **every_arguments, char *arguments,
+    int *fd, int *input_fd)
 {
     if (every_arguments == NULL)
         return FAILURE;
@@ -133,26 +127,6 @@ int check_redirection(char **every_arguments, char *arguments, int *fd, int *inp
 }
 
 static
-void retrieve_stdout(int *output_fd, int *save_stdout)
-{
-    if (*output_fd != STDOUT_FILENO) {
-        dup2(*save_stdout, STDOUT_FILENO);
-        close(*output_fd);
-        close(*save_stdout);
-    }
-}
-
-static
-void retrieve_stdin(int *input_fd, int *save_input)
-{
-    if (*input_fd != STDIN_FILENO) {
-        dup2(*save_input, STDIN_FILENO);
-        close(*input_fd);
-        close(*save_input);
-    }
-}
-
-static
 void destroy_pipes_split(pipes_splits_t *pipes_split)
 {
     pipes_splits_t *tmp = NULL;
@@ -166,6 +140,15 @@ void destroy_pipes_split(pipes_splits_t *pipes_split)
     }
 }
 
+static void assign_output_input(int output_fd, int
+    input_fd, int *save_stdout, int *save_input)
+{
+    (*save_stdout) = dup(STDOUT_FILENO);
+    dup2(output_fd, STDOUT_FILENO);
+    (*save_input) = dup(STDIN_FILENO);
+    dup2(input_fd, STDIN_FILENO);
+}
+
 static
 void execute_single_instruction(char **arguments, shell_t *my_shell,
     builtin_t *builtin_array)
@@ -175,21 +158,17 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     int output_fd = STDOUT_FILENO;
     int input_fd = STDIN_FILENO;
     int save_stdout = 0;
-    int save_input =  0;
+    int save_input = 0;
 
     if (arguments == NULL || arguments[0] == NULL)
         return;
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        if (check_redirection(arguments, arguments[i], &output_fd, &input_fd) == FAILURE)
+        if (check_redirection(arguments, arguments[i],
+            &output_fd, &input_fd) == FAILURE)
             return;
         split_arguments = my_str_to_word_array(arguments[i]);
-        save_stdout = dup(STDOUT_FILENO);
-        dup2(output_fd, STDOUT_FILENO);
-        save_input = dup(STDIN_FILENO);
-        dup2(input_fd, STDIN_FILENO);
-        pipes_split = parse_pipes(split_arguments);
-        execute_pipe(my_shell, builtin_array, pipes_split);
-        destroy_user_arguments(split_arguments);
+        assign_output_input(output_fd, input_fd, &save_stdout, &save_input);
+        pipes_handling(my_shell, builtin_array, split_arguments, &pipes_split);
         retrieve_stdout(&output_fd, &save_stdout);
         retrieve_stdin(&input_fd, &save_input);
         destroy_pipes_split(pipes_split);
