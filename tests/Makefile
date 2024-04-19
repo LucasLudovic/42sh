@@ -24,6 +24,9 @@ SRC	+=	../src/parser/single_left_redirection.c
 SRC	+=	../src/parser/single_right_redirection.c
 SRC	+=	../src/parser/pipes.c
 SRC	+=	../src/parser/semicolon.c
+SRC	+=	../src/shell/pipes_handling.c
+SRC	+=	../src/parser/retrieve_stdin.c
+SRC	+=	../src/parser/retrieve_stdout.c
 SRC	+=	fonctionnal_tests.c
 
 OBJ	=	$(SRC:.c=.o)
@@ -49,8 +52,6 @@ clean:
 
 fclean:	clean
 	@	rm -f $(NAME)
-	@	find .. -name *.gcno -delete
-	@	find .. -name *.gcda -delete
 	@	rm -f ../$(NAME)
 
 re:	fclean all
