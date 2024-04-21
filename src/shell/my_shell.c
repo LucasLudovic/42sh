@@ -34,8 +34,10 @@ static
 void destroy_end(shell_t *shell, environment_t **shell_environment,
     builtin_t *builtin_array)
 {
-    if (shell != NULL)
+    if (shell != NULL) {
         shell->alias = destroy_alias(shell->alias);
+        destroy_history(shell->history);
+    }
     if (shell != NULL && shell->previous_path != NULL)
         free(shell->previous_path);
     destroy_environment_list(shell_environment);
@@ -98,6 +100,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
         return NULL;
     if (user_input[my_strlen(user_input) - 1] == '\n')
         user_input[my_strlen(user_input) - 1] = '\0';
+    update_history(shell, user_input);
     user_arguments = parse_semicolon(user_input);
     free(user_input);
     return user_arguments;
@@ -177,7 +180,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
 
 int my_shell(char **environment)
 {
-    shell_t my_shell = { .alive = TRUE, .environment = NULL,
+    shell_t my_shell = { .alive = TRUE, .environment = NULL, .history = NULL,
         .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
@@ -185,6 +188,7 @@ int my_shell(char **environment)
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
     my_shell.environment = get_environment(environment);
+
     while (my_shell.alive) {
         if (!check_if_tty())
             print_prompt(&my_shell);
