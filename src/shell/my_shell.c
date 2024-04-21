@@ -188,7 +188,6 @@ int my_shell(char **environment)
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
     my_shell.environment = get_environment(environment);
-
     while (my_shell.alive) {
         if (!check_if_tty())
             print_prompt(&my_shell);

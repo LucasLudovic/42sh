@@ -23,9 +23,11 @@ void destroy_history(history_t *history)
 
 int update_history(shell_t *shell, char const *cmd)
 {
+    history_t *tmp = NULL;
+
     if (shell == NULL || cmd == NULL)
         return FAILURE;
-    history_t *tmp = malloc(sizeof(history_t));
+    tmp = malloc(sizeof(history_t));
         if (tmp == NULL)
             return FAILURE;
     tmp->cmd = strdup(cmd);
