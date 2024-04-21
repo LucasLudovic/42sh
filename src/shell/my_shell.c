@@ -43,7 +43,7 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
     destroy_environment_list(shell_environment);
     if (builtin_array == NULL)
         return;
-    for (int i = 0; i < 5; i += 1) {
+    for (int i = 0; i < 6; i += 1) {
         if (builtin_array->name[i] != NULL)
             free(builtin_array->name[i]);
     }
@@ -78,7 +78,7 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->function[5] = &replace_alias;
     if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
         builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
-        builtin_array->name[4] == NULL)
+        builtin_array->name[4] == NULL || builtin_array->name[5] == NULL)
         return FAILURE;
     return SUCCESS;
 }
