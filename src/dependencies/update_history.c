@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "dependencies/history.h"
+#include "dependencies/history_struct.h"
 #include "my.h"
 #include "shell/my_shell.h"
 

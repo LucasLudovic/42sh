@@ -18,6 +18,7 @@ SRC	+=	src/builtin/setenv.c
 SRC	+=	src/builtin/unsetenv.c
 SRC	+=	src/builtin/exit.c
 SRC	+=	src/builtin/cd.c
+SRC	+=	src/builtin/history.c
 SRC	+=	src/parser/semicolon.c
 SRC	+=	src/parser/pipes.c
 SRC	+=	src/parser/double_left_redirection.c

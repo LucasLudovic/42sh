@@ -8,7 +8,7 @@
 #ifndef MY_SHELL_H_
     #define MY_SHELL_H_
     #include "dependencies/environment.h"
-    #include "dependencies/history.h"
+    #include "dependencies/history_struct.h"
 
 typedef struct alias_s {
     char *initial_name;

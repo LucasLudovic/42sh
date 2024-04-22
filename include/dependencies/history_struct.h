@@ -5,8 +5,8 @@
 ** Header to get the user history for the minishell1 project
 */
 
-#ifndef HISTORY_H_
-    #define HISTORY_H_
+#ifndef HISTORY_STRUCT_H_
+    #define HISTORY_STRUCT_H_
 
 typedef struct history_s {
     char *cmd;
