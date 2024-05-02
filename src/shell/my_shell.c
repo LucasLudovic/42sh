@@ -33,6 +33,7 @@
 #include "parser/retrieve_stdin.h"
 #include "parser/retrieve_stdout.h"
 #include "shell/pipes_handling.h"
+#include "dependencies/set_local_variable.h"
 
 static
 void destroy_end(shell_t *shell, environment_t **shell_environment,
@@ -211,25 +212,34 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     }
 }
 
+static void initialize_dependencies(shell_t *shell, char **environment)
+{
+    if (shell == NULL || environment == NULL || *environment == NULL)
+        return;
+    shell->environment = get_environment(environment);
+    set_local_variable(shell);
+}
+
 int my_shell(char **environment)
 {
-    shell_t my_shell = { .alive = TRUE, .environment = NULL, .history = NULL,
-        .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL };
+    shell_t shell = { .alive = TRUE, .environment = NULL, .history = NULL,
+        .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL,
+        .variable = NULL};
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
 
     if (initialize_function_pointer_array(&builtin_array) == FAILURE)
         return FAILURE;
-    my_shell.environment = get_environment(environment);
-    while (my_shell.alive) {
+    initialize_dependencies(&shell, environment);
+    while (shell.alive) {
         if (!check_if_tty())
-            print_prompt(&my_shell);
-        arguments = get_user_arguments(&my_shell, arguments);
+            print_prompt(&shell);
+        arguments = get_user_arguments(&shell, arguments);
         if (arguments == NULL || arguments[0] == NULL)
             break;
-        execute_single_instruction(arguments, &my_shell, &builtin_array);
+        execute_single_instruction(arguments, &shell, &builtin_array);
         destroy_user_arguments(arguments);
     }
-    destroy_end(&my_shell, &my_shell.environment, &builtin_array);
-    return my_shell.exit_status;
+    destroy_end(&shell, &shell.environment, &builtin_array);
+    return shell.exit_status;
 }
