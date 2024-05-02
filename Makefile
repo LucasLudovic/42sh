@@ -30,6 +30,7 @@ SRC	+=	src/parser/retrieve_stdin.c
 SRC	+=	src/parser/check_ambiguity.c
 SRC	+=	src/actions/execute_actions.c
 SRC	+=	src/shell/pipes_handling.c
+SRC	+=	src/dependencies/set_local_variable.c
 
 OBJ	=	$(SRC:.c=.o)
 

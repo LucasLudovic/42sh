@@ -7,6 +7,7 @@
 
 #ifndef MY_SHELL_H_
     #define MY_SHELL_H_
+    #include "builtin/local_variable.h"
     #include "dependencies/environment.h"
     #include "dependencies/history_struct.h"
 
@@ -23,6 +24,7 @@ typedef struct shell_s {
     int exit_status;
     char *previous_path;
     alias_t *alias;
+    variable_t *variable;
 } shell_t;
 
 int my_shell(char **env);
