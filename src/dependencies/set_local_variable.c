@@ -13,7 +13,7 @@
 
 static int count_number(int nb)
 {
-    int count = 0;
+    int count = 1;
 
     while (nb > 0) {
         count += 1;
