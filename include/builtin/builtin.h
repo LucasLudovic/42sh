@@ -10,8 +10,8 @@
     #include "shell/my_shell.h"
 
 typedef struct builtin_s {
-    char *name[6];
-    int (*function[6])(shell_t *, char **, int);
+    char *name[7];
+    int (*function[7])(shell_t *, char **, int);
 } builtin_t;
 
 void empty_buffer(void);
