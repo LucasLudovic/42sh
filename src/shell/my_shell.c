@@ -44,6 +44,8 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
     if (shell != NULL && shell->previous_path != NULL)
         free(shell->previous_path);
     destroy_environment_list(shell_environment);
+    if (shell != NULL && shell->variable != NULL)
+        free_local_variable(shell->variable);
     if (builtin_array == NULL)
         return;
     for (int i = 0; i < 7; i += 1) {

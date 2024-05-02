@@ -11,5 +11,6 @@
     #include "../shell/my_shell.h"
 
 int set_local_variable(shell_t *my_shell);
+void free_local_variable(variable_t *variable);
 
 #endif
