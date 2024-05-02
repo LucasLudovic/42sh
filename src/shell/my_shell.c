@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <termio.h>
 #include "dependencies/environment.h"
 #include "dependencies/history_struct.h"
 #include "builtin/builtin.h"
@@ -91,20 +93,46 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
 static
 char **get_user_arguments(shell_t *shell, char **user_arguments)
 {
-    char *user_input = NULL;
-    size_t size = 0;
+    struct termios old_termios, new_termios;
+    char *user_input = malloc(sizeof(char) * 10000);
+    memset(user_input,'\0', sizeof(char) * 10000);
+    size_t i = 0;
+    char c = 'a';
 
-    if (getline(&user_input, &size, stdin) <= 0) {
-        if (user_input != NULL)
-            free(user_input);
-        if (check_if_tty())
-            shell->alive = FALSE;
-        return NULL;
+    tcgetattr(0, &old_termios);
+    new_termios = old_termios;  
+    new_termios.c_lflag &= ~ICANON; 
+    new_termios.c_lflag &= ~ECHO; 
+    tcsetattr(0, TCSANOW, &new_termios); 
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c == '\033') {
+            getchar();
+            switch(getchar()) {
+                case 'A':
+                    break;
+                case 'B':
+                    break;
+                case 'C':
+                    if(i < strlen(user_input))
+                        i++;
+                    break;
+                case 'D':
+                    if(i > 0)
+                        i--;
+                    break;
+            }
+        } else {
+            memmove(&user_input[i+1], &user_input[i], strlen(user_input) - i);
+            user_input[i] = c;
+            if (check_if_tty() != TRUE) {
+                printf("\r");
+            }
+            printf("%s", user_input);
+            fflush(stdout);
+            i++;
+        }
     }
-    if (user_input == NULL)
-        return NULL;
-    if (user_input[my_strlen(user_input) - 1] == '\n')
-        user_input[my_strlen(user_input) - 1] = '\0';
+    tcsetattr(0, TCSANOW, &old_termios);   
     update_history(shell, user_input);
     user_arguments = parse_semicolon(user_input);
     free(user_input);
