@@ -25,10 +25,13 @@ static int count_number(int nb)
 int set_local_variable(shell_t *my_shell)
 {
     char *return_value = malloc(sizeof(char) *
-        count_number(my_shell->exit_status));
+        (count_number(my_shell->exit_status) + 1));
 
     if (my_shell == NULL)
         return FAILURE;
+    if (my_shell == NULL)
+        return FAILURE;
+    return_value[count_number(my_shell->exit_status)] = '\0';
     my_shell->variable = malloc(sizeof(variable_t));
     if (my_shell->variable == NULL)
         return FAILURE;
