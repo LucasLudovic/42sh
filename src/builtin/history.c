@@ -15,11 +15,11 @@
 static
 void print_history(history_t *history)
 {
-    if (history == NULL)
+    if (!history)
         return;
     print_history(history->next);
-    if (history->cmd != NULL)
-        printf("%s\n", history->cmd);
+    if (history->cmd && history->time)
+        printf("%i\t%s\t%s\n", history->index, history->time, history->cmd);
 }
 
 int history(shell_t *shell, UNUSED char **arguments, UNUSED int nb_arguments)
