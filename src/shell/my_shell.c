@@ -139,12 +139,13 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
             {
                 if (strlen(user_input) > 0) {
                     memmove(&user_input[i - 1], &user_input[i], strlen(user_input) - (i - 1));
-                    i -= 2;
+                    i -= 1;
                 }
             }
             else {
                 memmove(&user_input[i + 1], &user_input[i], strlen(user_input) - i);
                 user_input[i] = c;
+                i += 1;
             }
             if (!check_if_tty())
                 print_prompt(shell);
@@ -154,7 +155,6 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
                 printf("\033[%dC", cursor_position);
             if (cursor_position < 0)
                 printf("\033[%dD", cursor_position * -1);
-            i += 1;
         }
     }
     my_putstr("\n");
