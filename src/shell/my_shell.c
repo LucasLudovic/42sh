@@ -109,6 +109,8 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
     if (user_input[my_strlen(user_input) - 1] == '\n')
         user_input[my_strlen(user_input) - 1] = '\0';
     update_history(shell, user_input);
+    for (size_t i = 0; user_input[i] != '\0'; i++)
+        user_input[i] = (user_input[i] == '#') ? '\0' : user_input[i];
     user_arguments = parse_semicolon(user_input);
     free(user_input);
     return user_arguments;
