@@ -25,6 +25,7 @@ typedef struct shell_s {
     char *previous_path;
     alias_t *alias;
     variable_t *variable;
+    int size_prompt;
 } shell_t;
 
 int my_shell(char **env);
