@@ -1,148 +1,102 @@
 /*
-** EPITECH PROJECT, 2023
-** MY_STR_TO_WORD_ARRAY
+** EPITECH PROJECT, 2024
+** 42sh
 ** File description:
-** Split a string into words
+** my_str_to_word_array for 42sh
 */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stddef.h>
-#include "my.h"
+#include <stdlib.h>
+#include <stdbool.h>
 
-static
-int check_not_delim(char const str, char const delim)
+static int check_char(char c)
 {
-    int condition1 = str < delim || str > delim;
-
-    if (condition1)
-        return 0;
-    return 1;
+    if (c == ' ' || c == '\t' || c == '\n' || c == '\0')
+        return (0);
+    return (1);
 }
 
-static
-int get_word_length(char const *str)
+static int nbr_of_word(char *str)
+{
+    int i = 0;
+    int nbr = 0;
+    bool quote = false;
+
+    for (; !check_char(str[i]) && str[i] != '\0'; i++);
+    while (str[i] != '\0') {
+        for (; check_char(str[i]) || quote; i++) {
+            i = (str[i] == '\\') ? i + 1 : i;
+            quote = (str[i] == '\'' || str[i] == '"') ? !quote : quote;
+            i = ((str[i] == '\'' || str[i] == '"')) ? i + 1 : i;
+        }
+        nbr += 1;
+        for (; !check_char(str[i]) && str[i] != '\0'; i++);
+    }
+    return (nbr);
+}
+
+static int word_size(char *str, int nbr)
+{
+    int i = 0;
+    int n = 0;
+    int nbch = 0;
+    bool quote = false;
+
+    for (; !check_char(str[i]) && str[i] != '\0'; i++);
+    while (str[i] != '\0' && n != nbr) {
+        for (; check_char(str[i]) || quote; i++) {
+            i = (str[i] == '\\') ? i + 1 : i;
+            quote = (str[i] == '\'' || str[i] == '"') ? !quote : quote;
+        }
+        n += 1;
+        for (; !check_char(str[i]) && str[i] != '\0'; i++);
+    }
+    for (; check_char(str[i]) || quote; i++) {
+        i = (str[i] == '\\' && (str[i] != '\'' || str[i] != '"')) ? i + 1 : i;
+        quote = (str[i] == '\'' || str[i] == '"') ? !quote : quote;
+        nbch = (str[i] == '\'' || str[i] == '"') ? nbch : nbch + 1;
+    }
+    return (nbch);
+}
+
+static void copytab(char **tab, char *str)
 {
     int i = 0;
     int j = 0;
+    int w = 0;
+    bool quote = false;
 
-    if (str == NULL)
-        return -1;
-    while (1) {
-        while (str[j] != ' ' && str[j] != '\n' && str[j] != '\0') {
-            i += 1;
+    for (; !check_char(str[i]) && str[i] != '\0'; i++);
+    while (str[i] != '\0') {
+        j = 0;
+        for (; check_char(str[i]) || quote; i++) {
+            i = (str[i] == '\\') ? i + 1 : i;
+            quote = (str[i] == '\'' || str[i] == '"') ? !quote : quote;
+            i = (str[i] == '\'' || str[i] == '"') ? i + 1 : i;
+            tab[w][j] = str[i];
             j += 1;
         }
-        if (i > 0)
-            return i;
-        j += 1;
+        tab[w][j] = '\0';
+        w += 1;
+        for (; !check_char(str[i]) && str[i] != '\0'; i++);
     }
 }
 
-static
-int get_nb_of_words(char const *str, char const delim)
+char **my_str_to_word_array(char *str)
 {
-    int words = 0;
-    int condition1 = 0;
-    int condition2 = 0;
+    int nbr = 0;
+    int nbch = 0;
+    char **tab = NULL;
 
     if (str == NULL)
-        return -1;
-    for (int i = 1; str[i] != '\0'; i += 1) {
-        condition1 = check_not_delim(str[i], delim);
-        condition2 = check_not_delim(str[i - 1], delim);
-        if ((condition1 && !condition2))
-            words += 1;
+        return (NULL);
+    nbr = nbr_of_word(str);
+    tab = malloc(sizeof(char *) * (nbr + 1));
+    for (int i = 0; i < nbr; i++) {
+        nbch = word_size(str, i);
+        tab[i] = malloc(sizeof(char) * nbch + 1);
     }
-    if (check_not_delim(str[my_strlen(str) - 1], delim) == 0)
-        words += 1;
-    return words;
-}
-
-static
-int go_to_word(char **arr)
-{
-    if (**arr == ' ')
-        *arr += 1;
-    return 0;
-}
-
-static
-int divide_into_array(char **ptr_to_return, char *arr, int number_of_words)
-{
-    int word_length = 0;
-    int nb_spaces = 0;
-
-    for (int i = 0; i < number_of_words; i += 1) {
-        if (go_to_word(&arr) == 84)
-            return 84;
-        word_length = get_word_length(arr);
-        ptr_to_return[i] = malloc(sizeof(char) * (word_length + 1));
-        for (int j = 0; j < word_length; j += 1)
-            ptr_to_return[i][j] = arr[j];
-        ptr_to_return[i][word_length] = '\0';
-        arr += word_length;
-    }
-    return 0;
-}
-
-static
-char *replace_tab(char *str)
-{
-    if (str == NULL)
-        return NULL;
-    for (int i = 0; str[i] != '\0'; i += 1) {
-        if (str[i] == '\t')
-            str[i] = ' ';
-    }
-    return str;
-}
-
-static
-char *clean_string(char *str)
-{
-    char *new_string = NULL;
-    int size_string = 0;
-    int clean_index = 0;
-
-    if (replace_tab(str) == NULL)
-        return NULL;
-    size_string = my_strlen(str);
-    if (str <= 0)
-        return NULL;
-    new_string = malloc(sizeof(char) * size_string + 1);
-    if (new_string == NULL)
-        return NULL;
-    for (int i = 0; str[i] != '\0'; i += 1)
-        if (str[i] != ' ' ||
-            (str[i + 1] != ' ' && str[i + 1] != '\0' && str[i + 1] != '\n')) {
-            new_string[clean_index] = str[i];
-            clean_index += 1;
-        }
-    new_string[clean_index] = '\0';
-    return new_string;
-}
-
-char **my_str_to_word_array(char *tab)
-{
-    int number_of_words = 0;
-    char *arr = clean_string(tab);
-    char **ptr_to_return = NULL;
-
-    number_of_words = get_nb_of_words(arr, ' ');
-    if (number_of_words < 1)
-        return NULL;
-    ptr_to_return = malloc(sizeof(char *) * (number_of_words + 1));
-    if (ptr_to_return == NULL)
-        return NULL;
-    if (arr == NULL || number_of_words < 1) {
-        free(ptr_to_return);
-        return NULL;
-    }
-    if (divide_into_array(ptr_to_return, arr, number_of_words) == 84)
-        return NULL;
-    ptr_to_return[number_of_words] = NULL;
-    if (arr != NULL)
-        free(arr);
-    return ptr_to_return;
+    copytab(tab, str);
+    tab[nbr] = NULL;
+    return (tab);
 }
