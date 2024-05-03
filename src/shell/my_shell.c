@@ -137,8 +137,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
             fflush(stdout);
             if (c == 8 || c == 127) // replace by macro later
             {
-                if (strlen(user_input) > 1) {
-                    printf("Bijour\n");
+                if (strlen(user_input) > 0) {
                     memmove(&user_input[i - 1], &user_input[i], strlen(user_input) - (i - 1));
                     i -= 2;
                 }
