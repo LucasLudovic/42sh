@@ -31,6 +31,7 @@ SRC	+=	../src/parser/retrieve_stdout.c
 SRC	+=	../src/dependencies/set_local_variable.c
 src	+=	../src/dependencies/update_history.c
 SRC	+=	../src/builtin/history.c
+SRC	+=	../src/dependencies/retrieve_variable.c
 SRC	+=	fonctionnal_tests.c
 
 OBJ	=	$(SRC:.c=.o)

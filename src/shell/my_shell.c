@@ -171,13 +171,12 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
     int save_stdout = 0;
     int save_input = 0;
 
-    if (arguments == NULL || arguments[0] == NULL)
-        return;
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
         if (check_redirection(arguments, arguments[i],
             &output_fd, &input_fd) == FAILURE)
             return;
         split_arguments = my_str_to_word_array(arguments[i]);
+        retrieve_variable(my_shell, split_arguments);
         assign_output_input(output_fd, input_fd, &save_stdout, &save_input);
         pipes_handling(my_shell, builtin_array, split_arguments, &pipes_split);
         retrieve_stdout(&output_fd, &save_stdout);
