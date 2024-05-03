@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "builtin/local_variable.h"
 #include "dependencies/environment.h"
 #include "my.h"
 #include "my_macros.h"
@@ -35,12 +36,38 @@ static char *search_variable_env(shell_t *shell, char *argument)
     return NULL;
 }
 
+static char *search_variable_local(shell_t *shell, char *argument)
+{
+    variable_t *head = NULL;
+    char *new_value = NULL;
+
+    if (shell->variable == NULL)
+        return NULL;
+    head = shell->variable;
+    while (shell->variable->next != NULL) {
+        if (strcmp(shell->variable->name, argument) == 0)
+            break;
+        shell->variable = shell->variable->next;
+    }
+    if (strcmp(shell->variable->name, argument) == 0) {
+        new_value = my_strdup(shell->variable->value);
+        shell->variable = head;
+        return new_value;
+    }
+    shell->variable = head;
+    return NULL;
+}
+
 static int check_dollar(shell_t *shell, char **argument)
 {
     char *new_value = NULL;
 
     if (strncmp(*argument, "$", 1) == 0) {
         new_value = search_variable_env(shell, *argument + 1);
+    }
+    if (new_value == NULL) {
+        if (strncmp(*argument, "$", 1) == 0)
+            new_value = search_variable_local(shell, *argument + 1);
     }
     if (*argument != NULL && new_value != NULL)
         free(*argument);
