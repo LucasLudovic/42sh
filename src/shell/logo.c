@@ -7,6 +7,7 @@
 
 #include "shell/my_shell.h"
 #include "my.h"
+#include <stdio.h>
 
 static
 const char logo[] =
@@ -46,7 +47,9 @@ void display_logo(void)
 {
     if (check_if_tty())
         return;
+    putchar('\n');
     display_string_colored(delim, "blue");
-    display_string_colored(logo, "green");
+    display_string_colored(logo, "cyan");
     display_string_colored(delim, "blue");
+    putchar('\n');
 }
