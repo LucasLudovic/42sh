@@ -168,6 +168,8 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
     else
         user_input = get_tty_input(shell);
     update_history(shell, user_input);
+    if (user_input == NULL)
+        return NULL;
     for (size_t i = 0; user_input[i] != '\0'; i += 1) {
         user_input[i] = (user_input[i] == '#') ? '\0' : user_input[i];
     }
