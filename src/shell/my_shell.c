@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <termio.h>
 #include "dependencies/environment.h"
 #include "dependencies/history_struct.h"
 #include "builtin/builtin.h"
@@ -31,6 +33,7 @@
 #include "parser/retrieve_stdin.h"
 #include "parser/retrieve_stdout.h"
 #include "shell/pipes_handling.h"
+#include "shell/my_shell.h"
 #include "dependencies/set_local_variable.h"
 
 static
@@ -54,7 +57,6 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
     }
 }
 
-static
 int check_if_tty(void)
 {
     struct stat terminal = { 0 };
@@ -91,32 +93,6 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     return SUCCESS;
 }
 
-static
-char **get_user_arguments(shell_t *shell, char **user_arguments)
-{
-    char *user_input = NULL;
-    size_t size = 0;
-
-    if (getline(&user_input, &size, stdin) <= 0) {
-        if (user_input != NULL)
-            free(user_input);
-        if (check_if_tty())
-            shell->alive = FALSE;
-        return NULL;
-    }
-    if (user_input == NULL)
-        return NULL;
-    if (user_input[my_strlen(user_input) - 1] == '\n')
-        user_input[my_strlen(user_input) - 1] = '\0';
-    update_history(shell, user_input);
-    for (size_t i = 0; user_input[i] != '\0'; i++)
-        user_input[i] = (user_input[i] == '#') ? '\0' : user_input[i];
-    user_arguments = parse_semicolon(user_input);
-    free(user_input);
-    return user_arguments;
-}
-
-static
 int check_redirection(char **every_arguments, char *arguments,
     int *fd, int *input_fd)
 {

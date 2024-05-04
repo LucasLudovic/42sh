@@ -18,6 +18,7 @@ SRC	+=	../src/dependencies/which.c
 SRC	+=	../src/dependencies/update_history.c
 SRC	+=	../src/shell/my_shell.c
 SRC	+=	../src/shell/prompt.c
+SRC	+=	../src/shell/line_editing.c
 SRC	+=	../src/parser/check_ambiguity.c
 SRC	+=	../src/parser/double_left_redirection.c
 SRC	+=	../src/parser/double_right_redirection.c

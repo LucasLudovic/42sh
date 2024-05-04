@@ -25,10 +25,13 @@ typedef struct shell_s {
     char *previous_path;
     alias_t *alias;
     variable_t *variable;
+    int size_prompt;
 } shell_t;
 
 int my_shell(char **env);
+int check_if_tty(void);
 void print_prompt(shell_t *shell);
+char **get_user_arguments(shell_t *shell, char **user_arguments);
 int update_history(shell_t *shell, char const *cmd);
 void destroy_history(history_t *history);
 
