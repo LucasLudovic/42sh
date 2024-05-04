@@ -159,6 +159,7 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
         pipes_handling(my_shell, builtin_array, split_arguments, &pipes_split);
         retrieve_stdout(&output_fd, &save_stdout);
         retrieve_stdin(&input_fd, &save_input);
+        update_return_value(my_shell);
         destroy_pipes_split(pipes_split);
     }
 }

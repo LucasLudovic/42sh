@@ -13,5 +13,6 @@
 int set_local_variable(shell_t *my_shell);
 void retrieve_variable(shell_t *shell, char **arguments);
 void free_local_variable(variable_t *variable);
+void update_return_value(shell_t *shell);
 
 #endif

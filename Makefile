@@ -33,6 +33,7 @@ SRC	+=	src/actions/execute_actions.c
 SRC	+=	src/shell/pipes_handling.c
 SRC	+=	src/dependencies/set_local_variable.c
 SRC	+=	src/dependencies/retrieve_variable.c
+SRC	+=	src/dependencies/update_return_value.c
 
 OBJ	=	$(SRC:.c=.o)
 
