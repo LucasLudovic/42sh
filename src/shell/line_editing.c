@@ -17,7 +17,8 @@
 #include "shell/my_shell.h"
 
 static
-void initialize_termios(struct termios *old_termios, struct termios *new_termios)
+void initialize_termios(struct termios *old_termios,
+    struct termios *new_termios)
 {
     tcgetattr(0, old_termios);
     *new_termios = *old_termios;
@@ -27,40 +28,56 @@ void initialize_termios(struct termios *old_termios, struct termios *new_termios
 }
 
 static
-void execute_escape_sequence(char *user_input, int *cursor_position,
-    size_t *i, char c)
+void move_cursor_left(long *cursor_position, long *i)
 {
+    if (*i > 0) {
+        *i -= 1;
+        my_putstr("\033[1D");
+        *cursor_position -= 1;
+    }
+}
+
+static
+void move_cursor_right(char *user_input, long *cursor_position, long *i)
+{
+    if (*i < my_strlen(user_input)) {
+        *i += 1;
+        my_putstr("\033[1C");
+        *cursor_position += 1;
+    }
+}
+
+static
+void execute_escape_sequence(char *user_input, long *cursor_position,
+    long *i, char c)
+{
+    char escape = 0;
+
     if (c == '\033') {
         getchar();
-        switch(getchar()) {
+        escape = getchar();
+        switch (escape) {
             case 'A':
                 break;
             case 'B':
                 break;
             case 'C':
-                if (*i < strlen(user_input)) {
-                    *i += 1;
-                    my_putstr("\033[1C");
-                    *cursor_position += 1;
-                }
+                move_cursor_right(user_input, cursor_position, i);
                 break;
             case 'D':
-                if (*i > 0) {
-                    *i -= 1;
-                    my_putstr("\033[1D");
-                    *cursor_position -= 1;
-                }
+                move_cursor_left(cursor_position, i);
                 break;
         }
     }
 }
 
 static
-void update_string(char *user_input, size_t *i, char c)
+void update_string(char *user_input, long *i, char c)
 {
     if (c == 8 || c == 127) {
-        if (strlen(user_input) > 0) {
-            memmove(&user_input[*i - 1], &user_input[*i], strlen(user_input) - (*i - 1));
+        if (my_strlen(user_input) + *i > my_strlen(user_input)) {
+            memmove(&user_input[*i - 1], &user_input[*i],
+                strlen(user_input) - (*i - 1));
             *i -= 1;
         }
     } else {
@@ -71,8 +88,11 @@ void update_string(char *user_input, size_t *i, char c)
 }
 
 static
-void update_input(shell_t *shell, char *user_input, int *cursor_position, size_t *i, char c)
+void update_input(shell_t *shell, char *user_input, long *position[2], char c)
 {
+    long *cursor_position = position[0];
+    long *i = position[1];
+
     if (c != '\033' && c != '\n' && c != EOF) {
         printf("\r\033[2K");
         fflush(stdout);
@@ -81,23 +101,24 @@ void update_input(shell_t *shell, char *user_input, int *cursor_position, size_t
         my_putstr(user_input);
         fflush(stdout);
         if (*cursor_position > 0)
-            printf("\033[%dC", *cursor_position);
+            printf("\033[%zuC", *cursor_position);
         if (*cursor_position < 0)
-            printf("\033[%dD", *cursor_position * -1);
+            printf("\033[%zuD", *cursor_position * -1);
     }
 }
 
 static
 char *retrieve_termios_input(shell_t *shell, char *user_input)
 {
-    size_t i = 0;
+    long i = 0;
     char c = 'a';
-    int cursor_position = 0;
+    long cursor_position = 0;
+    long *position[2] = { &cursor_position, &i };
 
     while (c != '\n' && c != EOF) {
         c = getchar();
         execute_escape_sequence(user_input, &cursor_position, &i, c);
-        update_input(shell, user_input, &cursor_position, &i, c);
+        update_input(shell, user_input, position, c);
     }
     return user_input;
 }
