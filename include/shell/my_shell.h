@@ -34,5 +34,6 @@ void print_prompt(shell_t *shell);
 char **get_user_arguments(shell_t *shell, char **user_arguments);
 int update_history(shell_t *shell, char const *cmd);
 void destroy_history(history_t *history);
+void display_logo(void);
 
 #endif

@@ -12,6 +12,7 @@
 
 int main(UNUSED const int argc, UNUSED char *const *argv, char **env)
 {
+    display_logo();
     if (env == NULL || env[0] == NULL)
         return display_error("Unable to locate the environment\n");
     if (argc != 1)
