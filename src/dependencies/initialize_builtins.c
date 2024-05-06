@@ -14,6 +14,7 @@
 #include "builtin/history.h"
 #include "builtin/unsetenv.h"
 #include "builtin/set_variables.h"
+#include "builtin/unset_variables.h"
 #include "my.h"
 #include <stdio.h>
 
@@ -46,6 +47,8 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->function[6] = &history;
     builtin_array->name[7] = my_strdup("set");
     builtin_array->function[7] = &set;
+    builtin_array->name[8] = my_strdup("unset");
+    builtin_array->function[8] = &unset;
     if (check_initialization(builtin_array) == FAILURE)
         return FAILURE;
     return SUCCESS;

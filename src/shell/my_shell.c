@@ -53,7 +53,7 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
         free_local_variable(shell->variable);
     if (builtin_array == NULL)
         return;
-    for (int i = 0; i < 8; i += 1) {
+    for (int i = 0; i < NB_BUILTIN; i += 1) {
         if (builtin_array->name[i] != NULL)
             free(builtin_array->name[i]);
     }

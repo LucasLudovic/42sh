@@ -12,6 +12,6 @@
     #define SUCCESS 0
     #define TRUE 1
     #define FALSE 0
-    #define NB_BUILTIN 8
+    #define NB_BUILTIN 9
 
 #endif
