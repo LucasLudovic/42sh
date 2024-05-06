@@ -24,7 +24,8 @@ int check_initialization(builtin_t *builtin_array)
     if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
         builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
         builtin_array->name[4] == NULL || builtin_array->name[5] == NULL ||
-        builtin_array->name[6] == NULL || builtin_array->name[7] == NULL)
+        builtin_array->name[6] == NULL || builtin_array->name[7] == NULL ||
+        builtin_array->name[8] == NULL)
         return FAILURE;
     return SUCCESS;
 }
@@ -49,7 +50,5 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->function[7] = &set;
     builtin_array->name[8] = my_strdup("unset");
     builtin_array->function[8] = &unset;
-    if (check_initialization(builtin_array) == FAILURE)
-        return FAILURE;
-    return SUCCESS;
+    return check_initialization(builtin_array);
 }
