@@ -36,6 +36,7 @@
 #include "shell/pipes_handling.h"
 #include "shell/my_shell.h"
 #include "dependencies/set_local_variable.h"
+#include "dependencies/initialize_builtins.h"
 
 static
 void destroy_end(shell_t *shell, environment_t **shell_environment,
@@ -67,33 +68,6 @@ int check_if_tty(void)
         return TRUE;
     }
     return FALSE;
-}
-
-static
-int initialize_function_pointer_array(builtin_t *builtin_array)
-{
-    builtin_array->name[0] = my_strdup("env");
-    builtin_array->function[0] = &env;
-    builtin_array->name[1] = my_strdup("setenv");
-    builtin_array->function[1] = &my_setenv;
-    builtin_array->name[2] = my_strdup("unsetenv");
-    builtin_array->function[2] = &my_unsetenv;
-    builtin_array->name[3] = my_strdup("exit");
-    builtin_array->function[3] = &exit_shell;
-    builtin_array->name[4] = my_strdup("cd");
-    builtin_array->function[4] = &change_directory;
-    builtin_array->name[5] = my_strdup("alias");
-    builtin_array->function[5] = &replace_alias;
-    builtin_array->name[6] = my_strdup("history");
-    builtin_array->function[6] = &history;
-    builtin_array->name[7] = my_strdup("set");
-    builtin_array->function[7] = &set;
-    if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
-        builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
-        builtin_array->name[4] == NULL || builtin_array->name[5] == NULL ||
-        builtin_array->name[6] == NULL || builtin_array->name[7] == NULL)
-        return FAILURE;
-    return SUCCESS;
 }
 
 int check_redirection(char **every_arguments, char *arguments,

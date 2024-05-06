@@ -36,6 +36,8 @@ SRC	+=	../src/dependencies/retrieve_variable.c
 SRC	+=	../src/dependencies/update_return_value.c
 SRC	+=	fonctionnal_tests.c
 SRC +=	../src/shell/logo.c
+SRC	+=	../src/dependencies/initialize_builtins.c
+SRC	+=	../src/builtin/set_variables.c
 
 OBJ	=	$(SRC:.c=.o)
 
