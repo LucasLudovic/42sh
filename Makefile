@@ -35,6 +35,7 @@ SRC	+=	src/dependencies/set_local_variable.c
 SRC	+=	src/dependencies/retrieve_variable.c
 SRC	+=	src/dependencies/update_return_value.c
 SRC +=	src/shell/logo.c
+SRC	+=	src/builtin/set_variables.c
 
 OBJ	=	$(SRC:.c=.o)
 

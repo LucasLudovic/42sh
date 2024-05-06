@@ -22,6 +22,7 @@
 #include "builtin/unsetenv.h"
 #include "builtin/exit.h"
 #include "builtin/cd.h"
+#include "builtin/set_variables.h"
 #include "builtin/alias.h"
 #include "builtin/history.h"
 #include "parser/parser.h"
@@ -51,7 +52,7 @@ void destroy_end(shell_t *shell, environment_t **shell_environment,
         free_local_variable(shell->variable);
     if (builtin_array == NULL)
         return;
-    for (int i = 0; i < 7; i += 1) {
+    for (int i = 0; i < 8; i += 1) {
         if (builtin_array->name[i] != NULL)
             free(builtin_array->name[i]);
     }
@@ -85,10 +86,12 @@ int initialize_function_pointer_array(builtin_t *builtin_array)
     builtin_array->function[5] = &replace_alias;
     builtin_array->name[6] = my_strdup("history");
     builtin_array->function[6] = &history;
+    builtin_array->name[7] = my_strdup("set");
+    builtin_array->function[7] = &set;
     if (builtin_array->name[0] == NULL || builtin_array->name[1] == NULL ||
         builtin_array->name[2] == NULL || builtin_array->name[3] == NULL ||
         builtin_array->name[4] == NULL || builtin_array->name[5] == NULL ||
-        builtin_array->name[6] == NULL)
+        builtin_array->name[6] == NULL || builtin_array->name[7] == NULL)
         return FAILURE;
     return SUCCESS;
 }
