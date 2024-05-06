@@ -147,6 +147,9 @@ void execute_single_instruction(char **arguments, shell_t *my_shell,
             destroy_pipes_split(pipes_split);
             comparison = comparison->next;
         }
+        if (head != NULL && head->argument != NULL)
+            free(head->argument);
+        destroy_comparison(head);
     }
 }
 

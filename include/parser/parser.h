@@ -36,5 +36,6 @@ int check_ambiguity(char **str);
 int execute_pipe(shell_t *shell, builtin_t *builtin_array,
     pipes_splits_t *pipes_arguments);
 comparison_t *retrieve_and_or_operator(shell_t *shell, char *input);
+void destroy_comparison(comparison_t *comparison);
 
 #endif
