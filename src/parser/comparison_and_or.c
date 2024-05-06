@@ -33,20 +33,44 @@ void add_new_node(comparison_t *comparison, char *input, char comparator)
     current->next = NULL;
 }
 
-comparison_t *retrieve_and_or_operator(shell_t *shell, char *input)
+static
+int handle_errors(comparison_t *comparison, char *input)
+{
+    if (comparison == NULL) {
+        display_error("Unable to alloc memory to comparison\n");
+        return FAILURE;
+    }
+    if (input == NULL) {
+        display_error("Unable to retrieve structs with && operator\n");
+        free(comparison);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+static
+int check_comparator(comparison_t *comparison, char *input, int i)
+{
+    if (input[i] == '&' && input[i + 1] == '&') {
+        input[i] = '\0';
+        add_new_node(comparison, &input[i + 2], AND);
+        return SUCCESS;
+    }
+    if (input[i] == '|' && input[i + 1] == '|') {
+        input[i] = '\0';
+        add_new_node(comparison, &input[i + 2], OR);
+        return SUCCESS;
+    }
+    return FAILURE;
+}
+
+comparison_t *retrieve_and_or_operator(char *input)
 {
     comparison_t *comparison = malloc(sizeof(comparison_t));
     comparison_t *head = comparison;
 
-    if (comparison == NULL) {
-        display_error("Unable to alloc memory to comparison\n");
+    if (handle_errors(comparison, input) == FAILURE)
         return NULL;
-    }
-    if (shell == NULL || input == NULL) {
-        display_error("Unable to retrieve structs with && operator\n");
-        free(comparison);
-        return NULL;
-    }
     comparison->argument = input;
     comparison->previous_comparator = NO_COMPARATOR;
     comparison->next = NULL;
@@ -55,16 +79,8 @@ comparison_t *retrieve_and_or_operator(shell_t *shell, char *input)
             display_error("Unable to access comparison\n");
             return destroy_comparison(head), NULL;
         }
-        if (input[i] == '&' && input[i + 1] == '&') {
-            input[i] = '\0';
-            add_new_node(comparison, &input[i + 2], AND);
+        if (check_comparator(comparison, input, i) == SUCCESS)
             comparison = comparison->next;
-        }
-        if (input[i] == '|' && input[i + 1] == '|') {
-            input[i] = '\0';
-            add_new_node(comparison, &input[i + 2], OR);
-            comparison = comparison->next;
-        }
     }
     return head;
 }
