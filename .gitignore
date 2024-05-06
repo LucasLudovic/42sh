@@ -1,7 +1,7 @@
 .cache
 compile_commands.json
 .idea
-mysh
+42sh
 *.o
 coding-style-reports.log
 *.gcno

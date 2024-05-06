@@ -99,16 +99,36 @@ static size_t find_len_arg(char **arguments)
 }
 
 static
+void find_number_of_arguments(char **arguments, size_t *nb_equal)
+{
+    for (size_t i = 0; arguments[i] != NULL; i += 1) {
+        if (my_strcmp(arguments[i], "=") == SUCCESS)
+            *nb_equal += 1;
+    }
+}
+
+static
 int handle_board(shell_t *shell, char **arguments)
 {
     size_t nb_equal = 0;
+    variable_t *head = shell->variable;
+    variable_t *tmp = NULL;
 
-    for (size_t i = 0; arguments[i] != NULL; i += 1) {
-        if (my_strcmp(arguments[i], "=") == SUCCESS)
-            nb_equal += 1;
-    }
+    find_number_of_arguments(arguments, &nb_equal);
     if (find_len_arg(arguments) != ((nb_equal * 3) + 1))
         return display_error("Wrong number of arguments\n");
+    for (size_t j = 1; j < ((nb_equal * 3) + 1); j += 3) {
+        if (arguments[j] == NULL || arguments[j + 2] == NULL)
+            return FAILURE;
+        while (shell->variable->next != NULL)
+            shell->variable = shell->variable->next;
+        tmp = malloc(sizeof(variable_t));
+        shell->variable->next = tmp;
+        tmp->name = my_strdup(arguments[j]);
+        tmp->value = my_strdup(arguments[j + 2]);
+        tmp->next = NULL;
+    }
+    shell->variable = head;
     return SUCCESS;
 }
 
