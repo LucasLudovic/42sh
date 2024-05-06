@@ -12,7 +12,8 @@
 #include <stdlib.h>
 
 static
-int retrieve_variable_value(variable_t *variable, char *argument, size_t const size)
+int retrieve_variable_value(variable_t *variable, char *argument,
+    size_t const size)
 {
     size_t len = 0;
     size_t i = 0;
@@ -31,7 +32,8 @@ int retrieve_variable_value(variable_t *variable, char *argument, size_t const s
 }
 
 static
-int retrieve_variable_name(variable_t *variable, char *argument, size_t const size)
+int retrieve_variable_name(variable_t *variable, char *argument,
+    size_t const size)
 {
     variable->name = malloc(sizeof(char) * (size + 1));
     if (variable->name == NULL)
@@ -44,6 +46,18 @@ int retrieve_variable_name(variable_t *variable, char *argument, size_t const si
 }
 
 static
+void check_equal(char *argument, int *equal, size_t *size)
+{
+    for (size_t j = 0; argument[j] != '\0'; j += 1) {
+        if (argument[j] == '=') {
+            *equal = TRUE;
+            *size = j;
+            break;
+        }
+    }
+}
+
+static
 int check_format(shell_t *shell, char *argument)
 {
     variable_t *head = shell->variable;
@@ -51,21 +65,16 @@ int check_format(shell_t *shell, char *argument)
     int equal = FALSE;
     size_t size = 0;
 
-    for (size_t j = 0; argument[j] != '\0'; j += 1) {
-        if (argument[j] == '=') {
-            equal = TRUE;
-            size = j;
-            break;
-        }
-    }
+    check_equal(argument, &equal, &size);
     if (equal == TRUE && argument[size + 1] != '\0') {
         while (shell->variable->next != NULL)
             shell->variable = shell->variable->next;
         tmp = malloc(sizeof(variable_t));
-        shell->variable->next = tmp;
-        if (retrieve_variable_name(tmp, argument, size) == FAILURE)
+        if (tmp == NULL)
             return FAILURE;
-        if (retrieve_variable_value(tmp, argument, size) == FAILURE)
+        shell->variable->next = tmp;
+        if (retrieve_variable_name(tmp, argument, size) == FAILURE ||
+            retrieve_variable_value(tmp, argument, size) == FAILURE)
             return FAILURE;
         tmp->next = NULL;
     }
@@ -75,7 +84,8 @@ int check_format(shell_t *shell, char *argument)
 
 int set(shell_t *shell, char **arguments, UNUSED int nb_arguments)
 {
-    if (shell == NULL || shell->variable == NULL || arguments == NULL || arguments[0] == NULL)
+    if (shell == NULL || shell->variable == NULL || arguments == NULL ||
+        arguments[0] == NULL)
         return FAILURE;
     for (size_t i = 1; arguments[i] != NULL; i += 1) {
         check_format(shell, arguments[i]);
