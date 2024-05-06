@@ -114,37 +114,52 @@ static void assign_output_input(int output_fd, int
 }
 
 static
+void retrieve_terminal(int *output_fd, int *input_fd, int *save_stdout, int *save_input)
+{
+    retrieve_stdout(output_fd, save_stdout);
+    retrieve_stdin(input_fd, save_input);
+}
+
+static
+int execute_split(shell_t *my_shell, builtin_t *builtin_array,
+    comparison_t *comparison, char **arguments)
+{
+    char **split_arguments = NULL;
+    pipes_splits_t *pipes_split = NULL;
+    int save_stdout = 0;
+    int save_input = 0;
+    int output_fd = STDOUT_FILENO;
+    int input_fd = STDIN_FILENO;
+
+    if (check_redirection(arguments, comparison->argument,
+        &output_fd, &input_fd) == FAILURE)
+        return FAILURE;
+    split_arguments = my_str_to_word_array(comparison->argument);
+    retrieve_variable(my_shell, split_arguments);
+    assign_output_input(output_fd, input_fd, &save_stdout, &save_input);
+    pipes_handling(my_shell, builtin_array, split_arguments, &pipes_split);
+    retrieve_terminal(&output_fd, &input_fd, &save_stdout, &save_input);
+    update_return_value(my_shell);
+    destroy_pipes_split(pipes_split);
+    return SUCCESS;
+}
+
+static
 void execute_single_instruction(char **arguments, shell_t *my_shell,
     builtin_t *builtin_array)
 {
     comparison_t *comparison = NULL;
     comparison_t *head = NULL;
-    char **split_arguments = NULL;
-    pipes_splits_t *pipes_split = NULL;
-    int output_fd = STDOUT_FILENO;
-    int input_fd = STDIN_FILENO;
-    int save_stdout = 0;
-    int save_input = 0;
 
     for (size_t i = 0; arguments[i] != NULL; i += 1) {
         comparison = retrieve_and_or_operator(my_shell, my_strdup(arguments[i]));
         head = comparison;
         while (comparison != NULL) {
-            if (comparison->previous_comparator == AND && my_shell->exit_status != 0)
+            if ((comparison->previous_comparator == AND && my_shell->exit_status != 0) ||
+                (comparison->previous_comparator == OR && my_shell->exit_status == 0))
                 break;
-            if (comparison->previous_comparator == OR && my_shell->exit_status == 0)
-                break;
-            if (check_redirection(arguments, comparison->argument,
-                &output_fd, &input_fd) == FAILURE)
+            if (execute_split(my_shell, builtin_array, comparison, arguments) == FAILURE)
                 return;
-            split_arguments = my_str_to_word_array(comparison->argument);
-            retrieve_variable(my_shell, split_arguments);
-            assign_output_input(output_fd, input_fd, &save_stdout, &save_input);
-            pipes_handling(my_shell, builtin_array, split_arguments, &pipes_split);
-            retrieve_stdout(&output_fd, &save_stdout);
-            retrieve_stdin(&input_fd, &save_input);
-            update_return_value(my_shell);
-            destroy_pipes_split(pipes_split);
             comparison = comparison->next;
         }
         if (head != NULL && head->argument != NULL)
