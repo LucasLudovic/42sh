@@ -26,6 +26,7 @@ SRC	+=	../src/parser/single_left_redirection.c
 SRC	+=	../src/parser/single_right_redirection.c
 SRC	+=	../src/parser/pipes.c
 SRC	+=	../src/parser/semicolon.c
+SRC	+=	../src/parser/comparison_and_or.c
 SRC	+=	../src/shell/pipes_handling.c
 SRC	+=	../src/parser/retrieve_stdin.c
 SRC	+=	../src/parser/retrieve_stdout.c
