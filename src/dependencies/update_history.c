@@ -58,6 +58,9 @@ int update_history(shell_t *shell, char const *cmd)
         return FAILURE;
     tmp->index = (shell->history) ? shell->history->index + 1 : 1;
     tmp->next = shell->history;
+    if (shell->history != NULL)
+        shell->history->prev = tmp;
     shell->history = tmp;
+    shell->history->prev = NULL;
     return SUCCESS;
 }

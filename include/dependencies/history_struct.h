@@ -9,6 +9,7 @@
     #define HISTORY_STRUCT_H_
 
 typedef struct history_s {
+    struct history_s *prev;
     int index;
     char *cmd;
     char *time;
