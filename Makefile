@@ -75,6 +75,10 @@ fclean:	clean
 
 re: fclean all
 
+unit_tests: re
+	@make re -C tests/
+	@make clean -C tests/
+
 tests_run:	re
 	@make re -C tests/
 	@make clean -C tests/
@@ -82,4 +86,4 @@ tests_run:	re
 	@gcovr --exclude tests/ --exclude src/main.c
 	@gcovr --exclude tests/ --exclude src/main.c --branches
 
-.PHONY:	clean fclean re all tests_run
+.PHONY:	clean fclean re all tests_run unit_tests
