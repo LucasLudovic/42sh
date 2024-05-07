@@ -11,6 +11,8 @@
 #include <threads.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <stdbool.h>
+#include <sys/stat.h>
 #include "my_alloc.h"
 #include "dependencies/which.h"
 #include "dependencies/environment.h"
@@ -19,22 +21,48 @@
 #include "parser/parser.h"
 #include "my_macros.h"
 #include "my.h"
+#include "actions/execute_actions.h"
 
 static
 int display_error_message(shell_t *shell, char *binary_name, int status)
 {
     if (shell != NULL)
         shell->exit_status = (status >= 256) ? status / 256 : status;
-    if (status == 136)
-        display_error("Floating exception (core dumped)\n");
-    if (status == 139)
-        display_error("Segmentation fault (core dumped)\n");
     if (shell->exit_status == 1) {
-        if (binary_name != NULL)
+        if (is_executable(binary_name) == false) {
             display_error(binary_name);
-        return display_error(": Permission denied.\n");
+            display_error(": Permission denied.\n");
+            return 1;
+        }
+    }
+    if (shell->exit_status == 84) {
+        display_error(binary_name);
+        display_error(": Permission denied.\n");
+        shell->exit_status = 1;
+        return 1;
     }
     return SUCCESS;
+}
+
+static
+int handle_segfault(int wait_status)
+{
+    int signal_number = 0;
+
+    if (WIFSIGNALED(wait_status)) {
+        signal_number = WTERMSIG(wait_status);
+        if (signal_number == SIGSEGV) {
+            display_error("Segmentation fault");
+            check_dump(wait_status);
+            return 128 + WTERMSIG(wait_status);
+        }
+        if (signal_number == SIGFPE) {
+            display_error("Floating exception\n");
+            check_dump(wait_status);
+            return 128 + WTERMSIG(wait_status);
+        }
+    }
+    return 0;
 }
 
 static
@@ -44,8 +72,6 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     char **environment_array = NULL;
     int wait_status = 0;
 
-    if (path == NULL || arguments == NULL || arguments[0] == NULL)
-        return FAILURE;
     environment_array = convert_environment_to_array(shell->environment);
     if (access(path, X_OK) != 0 || environment_array == NULL) {
         destroy_environment_array(environment_array);
@@ -55,8 +81,10 @@ int execute_binary(shell_t *shell, char *path, char **arguments)
     if (current_pid == 0) {
         execve(path, arguments, environment_array);
         exit(FAILURE);
-    } else
+    } else {
         waitpid(-1, &wait_status, 0);
+        handle_segfault(wait_status);
+    }
     destroy_environment_array(environment_array);
     return display_error_message(shell, arguments[0], wait_status);
 }
@@ -100,8 +128,9 @@ int execute_from_current_directory(shell_t *shell, char *binary_name,
     if (my_strncmp(binary_name, "./", 2) == 0)
         binary_name += 2;
     if (!check_current_directory(binary_name) &&
-        !check_as_absolute(binary_name))
+        !check_as_absolute(binary_name)) {
         return FAILURE;
+        }
     return execute_binary(shell, binary_name, arguments);
 }
 
@@ -152,26 +181,26 @@ int get_number_argument(char **arguments)
     return nb_arguments;
 }
 
-int execute_action(shell_t *shell, builtin_t *builtin_array, char **arguments)
+int execute_action(shell_t *shell, builtin_t *builtins, char **args)
 {
     int nb_arguments = 0;
     char *binary_name = NULL;
 
-    if (shell == NULL || arguments == NULL || arguments[0] == NULL)
+    if (shell == NULL || args == NULL || args[0] == NULL)
         return FAILURE;
     shell->exit_status = 0;
-    use_alias(shell, &arguments[0]);
-    binary_name = arguments[0];
-    nb_arguments = get_number_argument(arguments);
+    use_alias(shell, &args[0]);
+    binary_name = args[0];
+    nb_arguments = get_number_argument(args);
     for (int i = 0; i < NB_BUILTIN; i += 1) {
-        if (my_strcmp(builtin_array->name[i], binary_name) == 0) {
-            builtin_array->function[i](shell, arguments,
-                nb_arguments);
+        if (my_strcmp(builtins->name[i], binary_name) == 0) {
+            builtins->function[i](shell, args, nb_arguments);
             return shell->exit_status;
         }
     }
-    if (execute_from_current_directory(shell, binary_name, arguments) == 0)
+    if (execute_from_current_directory(shell, binary_name, args)
+        != FAILURE || shell->exit_status != 0)
         return SUCCESS;
     return (shell->exit_status == 1) ?
-        SUCCESS : execute_from_path(shell, binary_name, arguments);
+        SUCCESS : execute_from_path(shell, binary_name, args);
 }

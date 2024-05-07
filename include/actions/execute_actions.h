@@ -10,8 +10,11 @@
     #include "dependencies/environment.h"
     #include "builtin/builtin.h"
     #include "parser/parser.h"
+    #include <stdbool.h>
 
 int execute_action(shell_t *shell, builtin_t *builtin_array,
     char **arguments);
+int check_dump(int wait_status);
+bool is_executable(char *binary_name);
 
 #endif

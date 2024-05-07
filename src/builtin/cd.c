@@ -13,6 +13,7 @@
 #include "my_macros.h"
 #include "my.h"
 #include <stdlib.h>
+#include <sys/stat.h>
 
 static
 char *get_home(environment_t *environment)
@@ -78,12 +79,30 @@ void change_esperluette(char **arguments, char **destination,
 }
 
 static
+void display_err(char *name, char *type_err)
+{
+    display_error(name);
+    display_error(type_err);
+}
+
+static
 int change_from_path(shell_t *shell, char **destination, int need_to_free)
 {
-    if (chdir(*destination) != 0) {
-        if (need_to_free == TRUE && *destination != NULL)
-            free(destination);
-        return display_error("Unable to change the directory\n");
+    struct stat path_stat;
+
+    shell->exit_status = 1;
+    if (stat(*destination, &path_stat) != 0) {
+        display_err(destination[0], ": No such file or directory.\n");
+        return FAILURE;
+    }
+    if (S_ISDIR(path_stat.st_mode)) {
+        if (chdir(*destination) != 0) {
+            display_err(destination[0], ": Unable to change the directory.\n");
+            return FAILURE;
+        }
+    } else {
+        display_err(destination[0], ": Not a directory.\n");
+        return FAILURE;
     }
     if (need_to_free == TRUE && *destination != NULL)
         free(*destination);
