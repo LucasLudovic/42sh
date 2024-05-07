@@ -18,16 +18,11 @@ int check_separator(char character)
     return FALSE;
 }
 
-char *autocomplete_line(char *line)
+static
+int check_first_word(char *line, int start_line)
 {
     int is_first_word = TRUE;
-    int start_line = 0;
-    char *new_line = line;
 
-    if (line == NULL)
-        return NULL;
-    while (line[start_line] == ' ')
-        start_line += 1;
     for (size_t i = start_line; line[i] != '\0'; i += 1) {
         if (is_first_word == FALSE)
             is_first_word = check_separator(line[i]);
@@ -39,6 +34,20 @@ char *autocomplete_line(char *line)
                 i += 1;
         }
     }
+    return is_first_word;
+}
+
+char *autocomplete_line(char *line)
+{
+    int is_first_word = TRUE;
+    int start_line = 0;
+    char *new_line = line;
+
+    if (line == NULL)
+        return NULL;
+    while (line[start_line] == ' ')
+        start_line += 1;
+    is_first_word = check_first_word(line, start_line);
     if (is_first_word == TRUE)
         return line;
     return new_line;
