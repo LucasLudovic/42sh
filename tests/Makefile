@@ -38,6 +38,7 @@ SRC	+=	fonctionnal_tests.c
 SRC +=	../src/shell/logo.c
 SRC	+=	../src/dependencies/initialize_builtins.c
 SRC	+=	../src/builtin/set_variables.c
+SRC += ../src/actions/segfault.c
 
 OBJ	=	$(SRC:.c=.o)
 
