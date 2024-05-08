@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2024
-** Alias
+** 42sh
 ** File description:
-** Give an alias to a command
+** history builtin for 42sh
 */
 
 #include <stddef.h>

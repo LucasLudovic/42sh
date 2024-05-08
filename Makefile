@@ -40,6 +40,7 @@ SRC +=	src/shell/logo.c
 SRC	+=	src/builtin/set_variables.c
 SRC += 	src/actions/segfault.c
 SRC	+=	src/builtin/unset_variables.c
+SRC	+=	src/builtin/which.c
 
 OBJ	=	$(SRC:.c=.o)
 
