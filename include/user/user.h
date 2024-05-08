@@ -8,6 +8,7 @@
 #ifndef USER_H_
     #define USER_H_
     #include "shell/my_shell.h"
+    #define INPUT_MAX 10000
     #define NEXT 0
     #define PREV 1
 

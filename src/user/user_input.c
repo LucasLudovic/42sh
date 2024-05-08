@@ -51,11 +51,11 @@ char *execute_line_editor(shell_t *shell)
 {
     struct termios old_termios = { 0 };
     struct termios new_termios = { 0 };
-    char *user_input = malloc(sizeof(char) * 10000);
+    char *user_input = malloc(sizeof(char) * INPUT_MAX);
 
     if (shell == NULL || user_input == NULL)
         return NULL;
-    memset(user_input, '\0', sizeof(char) * 10000);
+    memset(user_input, '\0', sizeof(char) * INPUT_MAX);
     initialize_termios(&old_termios, &new_termios);
     user_input = retrieve_termios_input(shell, user_input);
     my_putstr("\n");

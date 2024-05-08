@@ -73,10 +73,12 @@ void retrieve_history_up(shell_t *shell, char *user_input,
         if (shell->history == NULL)
             return;
         if (strncmp(shell->current_input, shell->history->cmd,
-            strlen(shell->current_input)) == 0
+            my_strlen(shell->current_input)) == 0
             && (strcmp(user_input, shell->history->cmd) != 0)) {
-            *i = strlen(shell->history->cmd);
+            *i = my_strlen(shell->history->cmd);
             my_strcpy(user_input, shell->history->cmd);
+            memset(&user_input[my_strlen(user_input)],
+                '\0', INPUT_MAX - my_strlen(user_input));
             refresh_input(shell, user_input, cursor_position);
             move_threw_history(shell, NEXT);
             break;
@@ -97,10 +99,12 @@ void retrieve_history_down(shell_t *shell, char *user_input,
         if (shell->history == NULL)
             return;
         if (strncmp(shell->current_input, shell->history->cmd,
-            strlen(shell->current_input)) == 0
+            my_strlen(shell->current_input)) == 0
             && (strcmp(user_input, shell->history->cmd) != 0)) {
-            *i = strlen(shell->history->cmd);
+            *i = my_strlen(shell->history->cmd);
             my_strcpy(user_input, shell->history->cmd);
+            memset(&user_input[my_strlen(user_input)],
+                '\0', INPUT_MAX - my_strlen(user_input));
             refresh_input(shell, user_input, cursor_position);
             move_threw_history(shell, PREV);
             break;
