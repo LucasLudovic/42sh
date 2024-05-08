@@ -183,7 +183,7 @@ int my_shell(char **environment)
 {
     shell_t shell = { .alive = TRUE, .environment = NULL, .history = NULL,
         .exit_status = SUCCESS, .previous_path = NULL, .alias = NULL,
-        .variable = NULL};
+        .variable = NULL, .history_head = NULL, .current_input = NULL };
     builtin_t builtin_array = { 0 };
     char **arguments = NULL;
 

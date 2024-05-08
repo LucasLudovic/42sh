@@ -21,8 +21,10 @@ typedef struct shell_s {
     int alive;
     environment_t *environment;
     history_t *history;
+    history_t *history_head;
     int exit_status;
     char *previous_path;
+    char *current_input;
     alias_t *alias;
     variable_t *variable;
     int size_prompt;
