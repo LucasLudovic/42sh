@@ -8,6 +8,8 @@
 #ifndef USER_H_
     #define USER_H_
     #include "shell/my_shell.h"
+    #define NEXT 0
+    #define PREV 1
 
 void execute_escape_sequence(shell_t *shell, char *user_input,
     long *position[2], char c);

@@ -15,6 +15,7 @@
 #include "parser/parser.h"
 #include "builtin/history.h"
 #include "shell/my_shell.h"
+#include "user/user.h"
 
 static
 void move_cursor_left(long *cursor_position, long *i)
@@ -51,6 +52,18 @@ void refresh_input(shell_t *shell, char *user_input, long *cursor_position)
 }
 
 static
+void move_threw_history(shell_t *shell, int move)
+{
+    if (move == NEXT)
+        if (shell->history->next != NULL)
+            shell->history = shell->history->next;
+    if (move == PREV)
+        if (shell->history->prev != NULL) {
+            shell->history = shell->history->prev;
+        }
+}
+
+static
 void retrieve_history_up(shell_t *shell, char *user_input,
     long *cursor_position, long *i)
 {
@@ -65,8 +78,7 @@ void retrieve_history_up(shell_t *shell, char *user_input,
             *i = strlen(shell->history->cmd);
             my_strcpy(user_input, shell->history->cmd);
             refresh_input(shell, user_input, cursor_position);
-            if (shell->history->next != NULL)
-                shell->history = shell->history->next;
+            move_threw_history(shell, NEXT);
             break;
         }
         if (shell->history->next == NULL)
@@ -90,8 +102,7 @@ void retrieve_history_down(shell_t *shell, char *user_input,
             *i = strlen(shell->history->cmd);
             my_strcpy(user_input, shell->history->cmd);
             refresh_input(shell, user_input, cursor_position);
-            if (shell->history->prev != NULL)
-                shell->history = shell->history->prev;
+            move_threw_history(shell, PREV);
             break;
         }
         if (shell->history->prev == NULL)
