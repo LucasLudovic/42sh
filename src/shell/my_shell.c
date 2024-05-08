@@ -37,6 +37,7 @@
 #include "shell/my_shell.h"
 #include "dependencies/set_local_variable.h"
 #include "dependencies/initialize_builtins.h"
+#include "user/user.h"
 
 static
 void destroy_end(shell_t *shell, environment_t **shell_environment,

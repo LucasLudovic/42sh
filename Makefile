@@ -7,8 +7,9 @@
 
 SRC	=	src/main.c
 SRC	+=	src/shell/my_shell.c
-SRC	+=	src/shell/line_editing.c
 SRC	+=	src/shell/prompt.c
+SRC	+=	src/user/line_editing.c
+SRC	+=	src/user/user_input.c
 SRC	+=	src/dependencies/which.c
 SRC	+=	src/dependencies/get_environment.c
 SRC	+=	src/dependencies/environment_array.c
