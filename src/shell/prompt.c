@@ -10,19 +10,23 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include "dependencies/environment.h"
 #include "my.h"
 #include "shell/my_shell.h"
 
 static
 void get_home(shell_t *shell, char **home_directory)
 {
+    environment_t *head = shell->environment;
+
     while (shell->environment != NULL) {
-        if (shell->environment == NULL)
-            return;
-        if (my_strcmp(shell->environment->key, "HOME") == 0)
+        if (my_strcmp(shell->environment->key, "HOME") == 0) {
             *home_directory = shell->environment->value;
+            break;
+        }
         shell->environment = shell->environment->next;
     }
+    shell->environment = head;
 }
 
 static
@@ -81,6 +85,15 @@ void display_directory(char *current_directory, char *home_directory)
     display_branch();
 }
 
+static
+void destroy_current_directory(shell_t *shell, environment_t *head,
+    char *current_directory, int movement)
+{
+    current_directory -= movement;
+    free(current_directory);
+    shell->environment = head;
+}
+
 void print_prompt(shell_t *shell)
 {
     char *current_directory = NULL;
@@ -96,11 +109,11 @@ void print_prompt(shell_t *shell)
     if (current_directory == NULL)
         return;
     get_home(shell, &home_directory);
-    if (home_directory == NULL)
+    if (home_directory == NULL) {
+        free(current_directory);
         return;
+    }
     remove_home_from_directory(home_directory, &current_directory, &movement);
     display_directory(current_directory, home_directory);
-    current_directory -= movement;
-    free(current_directory);
-    shell->environment = head;
+    destroy_current_directory(shell, head, current_directory, movement);
 }

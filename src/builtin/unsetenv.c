@@ -22,8 +22,11 @@ int destroy_node(environment_t *environment, environment_t *previous_variable,
         previous_variable->next = environment->next;
     if (*head == environment)
         *head = environment->next;
-    environment->next = NULL;
-    destroy_environment_list(&environment);
+    if (environment->key != NULL)
+        free(environment->key);
+    if (environment->value != NULL)
+        free(environment->value);
+    free(environment);
     return SUCCESS;
 }
 

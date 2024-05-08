@@ -18,18 +18,21 @@ void destroy_single_node(environment_t **shell_environment)
 {
     if ((*shell_environment)->next != NULL)
         destroy_single_node(&(*shell_environment)->next);
-    if ((*shell_environment)->key != NULL)
+    if ((*shell_environment)->key != NULL) {
         free((*shell_environment)->key);
-    if ((*shell_environment)->value != NULL)
+    }
+    if ((*shell_environment)->value != NULL) {
         free((*shell_environment)->value);
+    }
     (*shell_environment)->key = NULL;
     (*shell_environment)->value = NULL;
     free(*shell_environment);
+    *shell_environment = NULL;
 }
 
 void destroy_environment_list(environment_t **shell_environment)
 {
-    if (shell_environment == NULL)
+    if (shell_environment == NULL || *shell_environment == NULL)
         return;
     destroy_single_node(shell_environment);
 }
