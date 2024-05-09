@@ -25,6 +25,9 @@ int which(shell_t *shell, char **arguments, UNUSED int nb_arguments)
         if (path != NULL) {
             printf("%s\n", path);
             free(path);
+        } else {
+            printf("%s: Command not found.\n", arguments[i]);
+            shell->exit_status = 1;
         }
     }
     return SUCCESS;
