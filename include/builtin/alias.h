@@ -12,6 +12,6 @@
 
 int replace_alias(shell_t *shell, char **arguments, UNUSED int nb_arguments);
 alias_t *destroy_alias(alias_t *alias);
-int use_alias(shell_t *shell, char **argument);
+int use_alias(shell_t *shell, char ***argument);
 
 #endif

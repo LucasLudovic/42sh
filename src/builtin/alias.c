@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "builtin/alias.h"
+#include "my_alloc.h"
 #include "my.h"
 #include "my_macros.h"
 #include "shell/my_shell.h"
@@ -137,45 +138,54 @@ alias_t *destroy_alias(alias_t *alias)
 }
 
 static
-char *replace_argument_alias(alias_t *alias, char *argument)
+char **replace_argument_alias(alias_t *alias, char **argument)
 {
-    char *new_argument = NULL;
-    int size_new_argument = 0;
+    char **new_argument = malloc(sizeof(char *));
+    char **alias_value = my_str_to_word_array(alias->initial_name);
+    size_t nb_arguments = 0;
 
-    if (alias == NULL || argument == NULL)
-        return NULL;
-    size_new_argument = my_strlen(alias->initial_name);
-    size_new_argument += my_strlen(argument);
-    new_argument = malloc(sizeof(char) * (size_new_argument + 1));
-    my_strcpy(new_argument, alias->initial_name);
-    my_strcat(new_argument, argument);
+    new_argument[0] = NULL;
+    for (size_t i = 0; alias_value[i] != NULL; i += 1) {
+        new_argument = my_realloc(new_argument, sizeof(char *) * (i + 2), sizeof(char *) * (i + 1));
+        new_argument[i] = alias_value[i];
+        new_argument[i + 1] = NULL;
+        nb_arguments += 1;
+    }
+    for (size_t i = 1; argument[i] != NULL; i += 1) {
+        new_argument = my_realloc(new_argument, sizeof(char *) * (nb_arguments + 2), sizeof(char *) * (nb_arguments + 1));
+        if (new_argument == NULL)
+            return NULL;
+        new_argument[nb_arguments] = argument[i];
+        new_argument[nb_arguments + 1] = NULL;
+        nb_arguments += 1;
+    }
+    free(alias_value);
     return new_argument;
 }
 
 static
-int parse_single_alias(alias_t *alias, char **argument, char *tmp)
+int parse_single_alias(alias_t *alias, char ***argument)
 {
-    if (my_strncmp(alias->alias, *argument, strlen(alias->alias)) == 0) {
-        *argument = replace_argument_alias(alias,
-            &(*argument)[my_strlen(alias->alias)]);
-        if (tmp != NULL)
-            free(tmp);
+    char **new_argument = NULL;
+
+    if (my_strncmp(alias->alias, **argument, strlen(alias->alias)) == 0) {
+        new_argument = replace_argument_alias(alias, *argument);
+        *argument = new_argument;
         return SUCCESS;
     }
     return FAILURE;
 }
 
-int use_alias(shell_t *shell, char **argument)
+int use_alias(shell_t *shell, char ***argument)
 {
     alias_t *alias = NULL;
-    char *tmp = NULL;
 
-    if (shell == NULL || shell->alias == NULL || argument == NULL)
+    if (shell == NULL || shell->alias == NULL || argument == NULL
+        || *argument == NULL)
         return FAILURE;
     alias = shell->alias;
-    tmp = *argument;
     while (alias != NULL) {
-        parse_single_alias(alias, argument, tmp);
+        parse_single_alias(alias, argument);
         alias = alias->next;
     }
     return FAILURE;

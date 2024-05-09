@@ -22,6 +22,7 @@
 #include "my_macros.h"
 #include "my.h"
 #include "actions/execute_actions.h"
+#include "shell/pipes_handling.h"
 
 static
 int display_error_message(shell_t *shell, char *binary_name, int status)
@@ -189,7 +190,7 @@ int execute_action(shell_t *shell, builtin_t *builtins, char **args)
     if (shell == NULL || args == NULL || args[0] == NULL)
         return FAILURE;
     shell->exit_status = 0;
-    use_alias(shell, &args[0]);
+    use_alias(shell, &args);
     binary_name = args[0];
     nb_arguments = get_number_argument(args);
     for (int i = 0; i < NB_BUILTIN; i += 1) {
