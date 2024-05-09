@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "builtin/alias.h"
 #include "my.h"
 #include "parser/parser.h"
 #include "builtin/history.h"
@@ -96,6 +97,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
     for (size_t i = 0; user_input[i] != '\0'; i += 1) {
         user_input[i] = (user_input[i] == '#') ? '\0' : user_input[i];
     }
+    use_alias(shell, &user_input);
     user_arguments = parse_semicolon(user_input);
     if (shell->current_input != NULL) {
         free(shell->current_input);

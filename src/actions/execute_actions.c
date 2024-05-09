@@ -190,7 +190,6 @@ int execute_action(shell_t *shell, builtin_t *builtins, char **args)
     if (shell == NULL || args == NULL || args[0] == NULL)
         return FAILURE;
     shell->exit_status = 0;
-    use_alias(shell, &args);
     binary_name = args[0];
     nb_arguments = get_number_argument(args);
     for (int i = 0; i < NB_BUILTIN; i += 1) {
