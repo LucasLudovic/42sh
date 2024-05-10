@@ -103,6 +103,7 @@ char **get_user_arguments(shell_t *shell, char **user_arguments)
         free(shell->current_input);
         shell->current_input = NULL;
     }
-    free(user_input);
+    if (user_input != NULL)
+        free(user_input);
     return user_arguments;
 }

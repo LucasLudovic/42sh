@@ -143,13 +143,18 @@ char *replace_argument_alias(alias_t *alias, char **argument)
     char *new_argument = NULL;
     char *user_input = *argument;
     char *alias_value = alias->initial_name;
+    char *save_end_str = NULL;
     int first_word = TRUE;
+    char previous_character = 0;
 
+    if (user_input == NULL)
+        return NULL;
     for (size_t i = 0; user_input[i] != '\0'; i += 1) {
         if (strncmp(alias->alias, &(user_input[i]), strlen(alias->alias)) == 0 && first_word == TRUE) {
-            new_argument = realloc(new_argument, sizeof(char) * (strlen(alias_value) + strlen(&(user_input[i])) + 1));
+            new_argument = realloc(new_argument, sizeof(char) * (strlen(alias_value) + strlen(&(user_input[i])) + 2));
             new_argument = strcpy(new_argument, alias_value);
-            new_argument = strcat(new_argument, &(user_input[i]));
+            new_argument = strcat(new_argument, " ");
+            new_argument = strcat(new_argument, &(user_input[strlen(alias->alias)]));
             free(*argument);
             *argument = NULL;
             *argument = new_argument;
@@ -157,8 +162,30 @@ char *replace_argument_alias(alias_t *alias, char **argument)
             i = 0;
             first_word = FALSE;
         }
-        if (user_input[i] == ' ')
+        if (user_input[i] == ' ' || (previous_character != '&' && previous_character != '|')) {
             first_word = FALSE;
+        }
+        if (user_input[i] == ' ' && (previous_character == '&' || previous_character == '|')) {
+            printf("Zebi\n");
+            while (user_input[i] == ' ') {
+                i += 1;
+            }
+            if (strncmp(alias->alias, &(user_input[i]), strlen(alias->alias)) == 0) {
+                new_argument = realloc(new_argument, sizeof(char) * (strlen(alias_value) - strlen(alias->alias) + strlen(user_input) + 1));
+                new_argument = strcpy(new_argument, user_input);
+                save_end_str = strdup(&new_argument[i] + strlen(alias->alias));
+                strcpy(&new_argument[i], alias_value);
+                strcat(new_argument, save_end_str);
+                free(*argument);
+                *argument = NULL;
+                *argument = new_argument;
+                user_input = new_argument;
+                if (save_end_str != NULL)
+                    free(save_end_str);
+                printf("Test : %s\n", new_argument);
+            }
+        }
+        previous_character = user_input[i];
     }
     return new_argument;
 }
