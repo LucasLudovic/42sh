@@ -29,9 +29,10 @@ int display_error_message(shell_t *shell, char *binary_name, int status)
     if (shell != NULL)
         shell->exit_status = (status >= 256) ? status / 256 : status;
     if (shell->exit_status == 1) {
-        if (is_executable(binary_name) == false) {
+        if (access(binary_name, X_OK) != 0 && my_strcmp(binary_name, "set") != 0) {
             display_error(binary_name);
             display_error(": Permission denied.\n");
+            shell->exit_status = 1;
             return 1;
         }
     }

@@ -14,19 +14,7 @@
 #include "my.h"
 #include <stdbool.h>
 #include <sys/stat.h>
-
-bool is_executable(char *binary_name)
-{
-    struct stat st = { 0 };
-
-    if (binary_name == NULL)
-        return FALSE;
-    if ((st.st_mode & S_IXUSR) || (st.st_mode & S_IXGRP) ||
-        (st.st_mode & S_IXOTH)) {
-        return TRUE;
-    }
-    return FALSE;
-}
+#include <stdio.h>
 
 int check_dump(int wait_status)
 {
